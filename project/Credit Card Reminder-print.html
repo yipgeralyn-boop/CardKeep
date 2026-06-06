@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Credit Card Reminder — Print</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=Figtree:wght@400..800&family=Space+Grotesk:wght@400..700&family=DM+Sans:opsz,wght@9..40,400..700&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root { --font-display: 'Bricolage Grotesque', sans-serif; --font-ui: 'Figtree', sans-serif; }
+  html, body { background: #E9E5DC; font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
+  #root { padding: 32px 0; }
+
+  .page {
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    width: 100%;
+  }
+  .page-cap {
+    font-family: var(--font-ui); font-size: 13px; font-weight: 600; letter-spacing: 0.4px;
+    text-transform: uppercase; color: #9a917f; margin-bottom: 16px;
+  }
+  .phone {
+    width: 402px; border-radius: 48px; position: relative; overflow: hidden;
+    background: #F4F1EA; box-shadow: 0 0 0 1px rgba(0,0,0,0.10), 0 30px 60px rgba(0,0,0,0.12);
+  }
+
+  @media screen {
+    .page { margin-bottom: 56px; }
+  }
+
+  @media print {
+    html, body { background: #fff !important; }
+    #root { padding: 0; }
+    * , *::before, *::after {
+      -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+      animation-delay: -99s !important; animation-duration: .001s !important;
+      animation-iteration-count: 1 !important; animation-fill-mode: both !important;
+      animation-play-state: running !important; transition-duration: 0s !important;
+    }
+    .page { break-after: page; break-inside: avoid; margin: 0; padding: 0; min-height: 0; }
+    .page:last-child { break-after: auto; }
+    .phone { box-shadow: 0 0 0 1px rgba(0,0,0,0.12); }
+  }
+  @page { size: A4 portrait; margin: 1cm; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="data.jsx"></script>
+<script type="text/babel" src="components.jsx"></script>
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="home.jsx"></script>
+<script type="text/babel" src="detail.jsx"></script>
+<script type="text/babel" src="reminders.jsx"></script>
+<script type="text/babel" src="payoff.jsx"></script>
+
+<script type="text/babel">
+const t = makeTheme({ dark: false, accent: '#5B4FD6', radius: 22 });
+const noop = () => {};
+const reminders = { '7d': true, '3d': true, 'due': true };
+const sapphire = CARDS.find((c) => c.id === 'sapphire');
+
+// Static phone frame (auto height, no scroll clipping) for print
+function PrintPhone({ children, cap }) {
+  return (
+    <div className="page">
+      <div className="page-cap">{cap}</div>
+      <div className="phone">
+        <div style={{ position: 'absolute', top: 11, left: '50%', transform: 'translateX(-50%)', width: 126, height: 37, borderRadius: 24, background: '#000', zIndex: 50 }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
+          <IOSStatusBar dark={false} />
+        </div>
+        <div style={{ paddingTop: 56, paddingBottom: 28 }}>{children}</div>
+        <div style={{ height: 30, display: 'flex', justifyContent: 'center', alignItems: 'flex-end', paddingBottom: 9 }}>
+          <div style={{ width: 139, height: 5, borderRadius: 100, background: 'rgba(0,0,0,0.22)' }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PrintApp() {
+  return (
+    <div>
+      <PrintPhone cap="Home — dashboard">
+        <HomeScreen t={t} cards={CARDS} onSelect={noop} onPay={noop} onOpenPlan={noop} />
+      </PrintPhone>
+      <PrintPhone cap="Card detail">
+        <DetailScreen t={t} card={sapphire} onBack={noop} onPay={noop} />
+      </PrintPhone>
+      <PrintPhone cap="Payoff plan">
+        <PayoffScreen t={t} cards={CARDS} monthly={450} setMonthly={noop} />
+      </PrintPhone>
+      <PrintPhone cap="Reminders">
+        <RemindersScreen t={t} cards={CARDS} onSelect={noop} reminders={reminders} setReminders={noop} tone="warm" />
+      </PrintPhone>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<PrintApp />);
+
+// Scale each phone to fit one print page, then print.
+function fitAndPrint() {
+  const MAX_W = 700, MAX_H = 985; // ~A4 portrait printable area at 96dpi w/ 1cm margins
+  document.querySelectorAll('.page').forEach((page) => {
+    const phone = page.querySelector('.phone');
+    if (!phone) return;
+    const w = phone.offsetWidth, h = phone.offsetHeight;
+    const scale = Math.min(MAX_W / w, MAX_H / h, 1);
+    if (scale < 1) {
+      phone.style.transform = `scale(${scale})`;
+      phone.style.transformOrigin = 'top center';
+      phone.style.marginBottom = `${-(h * (1 - scale))}px`;
+    }
+  });
+}
+
+if (!window.__printed) {
+  window.__printed = true;
+  Promise.all([
+    document.fonts ? document.fonts.ready : Promise.resolve(),
+    new Promise((r) => setTimeout(r, 600)),
+  ]).then(() => { fitAndPrint(); setTimeout(() => window.print(), 400); });
+}
+</script>
+</body>
+</html>
