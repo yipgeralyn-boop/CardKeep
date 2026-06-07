@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from './firebase';
+import { doc, onSnapshot }            from 'firebase/firestore';
+import { auth, db } from './firebase';
 import { syncWidget } from './plugins/widgetBridge';
 import { makeTheme, serializeCard, deserializeCard, computeDueDate } from './data';
 import { Ic } from './icons';
@@ -90,7 +91,7 @@ function MainApp({ uid, userEmail }) {
     localStorage.getItem(key('cardkeep_name')) || ''
   );
 
-  const [isPro,        setIsPro]        = useState(() => localStorage.getItem(key('cardkeep_pro')) === '1');
+  const [isPro,        setIsPro]        = useState(false);
   const [tab,          setTab]          = useState('home');
   const [selected,     setSelected]     = useState(null);
   const [monthly,      setMonthly]      = useState(450);
@@ -142,11 +143,10 @@ function MainApp({ uid, userEmail }) {
   };
 
   const handlePurchase = () => {
-    // TODO: wire RevenueCat purchase
-    setIsPro(true);
-    localStorage.setItem(key('cardkeep_pro'), '1');
+    // Purchase is processed natively via RevenueCat in the iOS app.
+    // A Cloud Function will set isPro=true in Firestore upon successful payment.
+    // The onSnapshot listener above will pick it up automatically.
     setShowUpgrade(false);
-    setAddingCard(true);
   };
 
   const handleSaveCard = (card) => {
@@ -166,6 +166,14 @@ function MainApp({ uid, userEmail }) {
     setEditingCard(null);
     setSelected(null);
   };
+
+  // Subscribe to Pro status from Firestore — cannot be spoofed via DevTools
+  useEffect(() => {
+    const ref = doc(db, 'users', uid);
+    return onSnapshot(ref, (snap) => {
+      setIsPro(snap.exists() && snap.data()?.isPro === true);
+    }, () => setIsPro(false)); // default to free on any error
+  }, [uid]);
 
   const scrollRef = useRef(null);
   useEffect(() => { if (scrollRef.current) scrollRef.current.scrollTop = 0; }, [tab, selected]);

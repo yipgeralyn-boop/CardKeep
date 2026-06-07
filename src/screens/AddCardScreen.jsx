@@ -108,10 +108,22 @@ export function AddCardScreen({ t, card, onSave, onDelete, onBack }) {
 
   function validate() {
     const e = {};
-    if (!f.name.trim()) e.name = 'Required';
-    if (!f.balance && f.balance !== '0') e.balance = 'Required';
-    if (!f.apr)     e.apr     = 'Required';
-    if (!f.dueDay || parseInt(f.dueDay) < 1 || parseInt(f.dueDay) > 31) e.dueDay = '1–31';
+    if (!f.name.trim())          e.name    = 'Required';
+    if (f.name.trim().length > 50) e.name  = 'Max 50 characters';
+
+    const balance   = parseFloat(f.balance);
+    const statement = parseFloat(f.statement);
+    const min       = parseFloat(f.min);
+    const lateFee   = parseFloat(f.lateFee);
+    const apr       = parseFloat(f.apr);
+    const dueDay    = parseInt(f.dueDay);
+
+    if (f.balance === '' || isNaN(balance) || balance < 0)          e.balance  = 'Enter a valid amount (0 or more)';
+    if (f.statement !== '' && (isNaN(statement) || statement < 0))  e.statement = 'Must be 0 or more';
+    if (f.min !== ''       && (isNaN(min)       || min < 0))        e.min      = 'Must be 0 or more';
+    if (f.lateFee !== ''   && (isNaN(lateFee)   || lateFee < 0))    e.lateFee  = 'Must be 0 or more';
+    if (!f.apr || isNaN(apr) || apr < 0 || apr > 100)              e.apr      = 'Enter a valid APR (0–100%)';
+    if (!f.dueDay || isNaN(dueDay) || dueDay < 1 || dueDay > 28)   e.dueDay   = '1–28';
     return e;
   }
 
@@ -121,8 +133,8 @@ export function AddCardScreen({ t, card, onSave, onDelete, onBack }) {
     const dueDay = parseInt(f.dueDay);
     onSave({
       id:       card?.id || `card_${Date.now()}`,
-      name:     f.name.trim(),
-      issuer:   f.issuer.trim(),
+      name:     f.name.trim().slice(0, 50),
+      issuer:   f.issuer.trim().slice(0, 50),
       last4:    f.last4.slice(-4).padStart(4, '0'),
       network:  f.network,
       grad:     f.grad,
