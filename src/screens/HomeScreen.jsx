@@ -28,6 +28,7 @@ function CardRow({ card, t, onClick }) {
         <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 16, color: t.text }}>{money(card.paid ? card.statement : card.balance)}</div>
         <div style={{ marginTop: 6 }}><StatusPill status={status} label={dueLabel(card)} t={t} /></div>
       </div>
+      <Ic.chevron width="15" height="15" style={{ color: t.textFaint, flexShrink: 0, marginLeft: -4 }} />
     </button>
   );
 }
@@ -84,7 +85,7 @@ function HeroCard({ card, t, onOpen }) {
           </div>
         </div>
 
-        <Btn t={t} variant="soft" onClick={onOpen} full>View details</Btn>
+        <Btn t={t} variant="soft" onClick={onOpen} full>Log payment · manage card</Btn>
       </div>
     </div>
   );
@@ -192,11 +193,14 @@ export function HomeScreen({ t, cards, userName, onSelect, onOpenPlan, onAddCard
       {/* Card list */}
       {cards.length > 0 && (
         <>
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', padding: '0 4px 10px' }}>
-            <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 19, color: t.text }}>Your cards</h2>
-            <button onClick={onAddCard} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: t.accent, fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 13.5, padding: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Ic.plus width="14" height="14" /> Add
-            </button>
+          <div style={{ padding: '0 4px 10px' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 3 }}>
+              <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 19, color: t.text }}>Your cards</h2>
+              <button onClick={onAddCard} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: t.accent, fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 13.5, padding: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <Ic.plus width="14" height="14" /> Add
+              </button>
+            </div>
+            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textFaint }}>Tap a card to log payments or update your statement</div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {cards.map((c) => <CardRow key={c.id} card={c} t={t} onClick={() => onSelect(c)} />)}
