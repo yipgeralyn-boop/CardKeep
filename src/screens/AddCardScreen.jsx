@@ -75,7 +75,7 @@ const EMPTY = {
   name: '', issuer: '', last4: '', network: 'VISA',
   grad: GRAD_PRESETS[0],
   balance: '', statement: '', min: '', limit: '', apr: '',
-  dueDay: '', autopay: false,
+  dueDay: '',
 };
 
 export function AddCardScreen({ t, card, onSave, onDelete, onBack }) {
@@ -92,7 +92,6 @@ export function AddCardScreen({ t, card, onSave, onDelete, onBack }) {
     limit:    String(card.limit),
     apr:      String((card.apr * 100).toFixed(2)),
     dueDay:   String(card.dueDay),
-    autopay:  card.autopay,
   } : EMPTY);
   const [errors, setErrors] = useState({});
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -104,7 +103,7 @@ export function AddCardScreen({ t, card, onSave, onDelete, onBack }) {
     network: f.network, last4: f.last4 || '0000', grad: f.grad,
     balance: parseFloat(f.balance) || 0, statement: parseFloat(f.statement) || 0,
     min: parseFloat(f.min) || 0, limit: parseFloat(f.limit) || 0,
-    apr: parseFloat(f.apr) / 100 || 0, due: new Date(), paid: false, autopay: f.autopay,
+    apr: parseFloat(f.apr) / 100 || 0, due: new Date(), paid: false,
   };
 
   function validate() {
@@ -136,7 +135,6 @@ export function AddCardScreen({ t, card, onSave, onDelete, onBack }) {
       dueDay,
       due:      computeDueDate(dueDay),
       paid:     card?.paid ?? false,
-      autopay:  f.autopay,
     });
   }
 
@@ -222,22 +220,6 @@ export function AddCardScreen({ t, card, onSave, onDelete, onBack }) {
               <Input value={f.dueDay} onChange={(v) => set('dueDay')(v.replace(/\D/g, ''))} t={t} placeholder="7" inputMode="numeric" />
             </Field>
           </div>
-        </div>
-
-        {/* Autopay toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: t.surface, borderRadius: t.radius, padding: '14px 16px', boxShadow: t.shadow }}>
-          <div>
-            <div style={{ fontFamily: 'var(--font-ui)', fontWeight: 600, fontSize: 15, color: t.text }}>Autopay enabled</div>
-            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textSoft, marginTop: 1 }}>Remind me even if autopay is on</div>
-          </div>
-          <button onClick={() => set('autopay')(!f.autopay)} style={{
-            width: 50, height: 30, borderRadius: 999, border: 'none', cursor: 'pointer', padding: 3,
-            background: f.autopay ? t.good : (t.dark ? 'rgba(255,255,255,0.16)' : 'rgba(38,34,25,0.16)'),
-            display: 'flex', justifyContent: f.autopay ? 'flex-end' : 'flex-start',
-            transition: 'all .2s', WebkitTapHighlightColor: 'transparent',
-          }}>
-            <span style={{ width: 24, height: 24, borderRadius: 999, background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,0.25)', transition: 'all .2s' }} />
-          </button>
         </div>
 
         <Btn t={t} full onClick={save}>
