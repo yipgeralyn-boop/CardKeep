@@ -50,7 +50,7 @@ function TimelineRow({ card, t, onSelect, isLast }) {
   );
 }
 
-export function RemindersScreen({ t, cards, onSelect, reminders, setReminders, tone }) {
+export function RemindersScreen({ t, cards, onSelect, reminders, setReminders, tone, userName }) {
   const sorted   = [...cards].sort((a, b) => { if (a.paid !== b.paid) return a.paid ? 1 : -1; return a.due - b.due; });
   const upcoming = sorted.filter((c) => !c.paid);
   const done     = sorted.filter((c) =>  c.paid);
@@ -78,15 +78,24 @@ export function RemindersScreen({ t, cards, onSelect, reminders, setReminders, t
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
-            <span style={{ fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 14, color: t.text, whiteSpace: 'nowrap' }}>Payment due soon</span>
+            <span style={{ fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 14, color: t.text, whiteSpace: 'nowrap' }}>
+              {upcoming[0] ? `${upcoming[0].name} payment` : 'CardKeep'}
+            </span>
             <span style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: t.textFaint, flexShrink: 0 }}>now</span>
           </div>
           <div style={{ fontFamily: 'var(--font-ui)', fontSize: 13.5, color: t.textSoft, marginTop: 3, lineHeight: 1.4 }}>
             {upcoming[0]
-              ? (tone === 'plain'
-                  ? `${upcoming[0].name} payment of ${money(upcoming[0].balance)} is due ${fmtDate(upcoming[0].due)}.`
-                  : `${upcoming[0].name} is due ${fmtDate(upcoming[0].due)} — a quick tap keeps you on track 💛`)
-              : 'No payments due. Nice work!'}
+              ? (() => {
+                  const card = upcoming[0];
+                  const d = daysUntil(card.due);
+                  const when = d === 0 ? 'today' : d === 1 ? 'tomorrow' : `on ${fmtDate(card.due)}`;
+                  const name = userName ? userName.trim().split(' ')[0] : '';
+                  if (tone === 'plain') {
+                    return `${money(card.balance)} due ${when}.`;
+                  }
+                  return `${name ? `${name}, your ` : 'Your '}${money(card.balance)} is due ${when}. Stay on track! 💛`;
+                })()
+              : (userName ? `Nice work, ${userName.trim().split(' ')[0]}! No payments due.` : 'No payments due. Nice work!')}
           </div>
         </div>
       </div>

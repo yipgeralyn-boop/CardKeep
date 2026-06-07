@@ -105,7 +105,7 @@ function EmptyState({ t, onAdd }) {
   );
 }
 
-export function HomeScreen({ t, cards, onSelect, onOpenPlan, onAddCard }) {
+export function HomeScreen({ t, cards, userName, onSelect, onOpenPlan, onAddCard }) {
   const unpaid = cards.filter((c) => !c.paid);
   const paid   = cards.filter((c) =>  c.paid);
   const next   = [...unpaid].sort((a, b) => a.due - b.due)[0];
@@ -113,6 +113,13 @@ export function HomeScreen({ t, cards, onSelect, onOpenPlan, onAddCard }) {
   const paidCount = paid.length;
   const totalDebt = cards.reduce((s, c) => s + c.balance, 0);
   const planSim   = totalDebt > 0 ? simulatePayoff(cards, 450) : null;
+
+  const firstName = userName ? userName.trim().split(' ')[0] : '';
+  const greeting  = !cards.length
+    ? (firstName ? `Welcome, ${firstName}` : 'Welcome')
+    : unpaid.length
+      ? (firstName ? `Hey, ${firstName}` : "Let's stay ahead")
+      : (firstName ? `Nice work, ${firstName}` : "You're all caught up");
 
   return (
     <div style={{ padding: '6px 18px 0' }}>
@@ -123,7 +130,7 @@ export function HomeScreen({ t, cards, onSelect, onOpenPlan, onAddCard }) {
           <div>
             <div style={{ fontFamily: 'var(--font-ui)', fontSize: 14, color: t.textSoft }}>CardKeep</div>
             <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: t.text, letterSpacing: 0.1, marginTop: 1 }}>
-              {!cards.length ? 'Welcome' : unpaid.length ? "Let's stay ahead" : "You're all caught up"}
+              {greeting}
             </div>
           </div>
         </div>
