@@ -74,7 +74,7 @@ function GradPicker({ value, onChange, t }) {
 const EMPTY = {
   name: '', issuer: '', last4: '', network: 'VISA',
   grad: GRAD_PRESETS[0],
-  balance: '', statement: '', min: '', limit: '', apr: '',
+  balance: '', statement: '', min: '', apr: '',
   dueDay: '',
 };
 
@@ -89,7 +89,6 @@ export function AddCardScreen({ t, card, onSave, onDelete, onBack }) {
     balance:  String(card.balance),
     statement:String(card.statement),
     min:      String(card.min),
-    limit:    String(card.limit),
     apr:      String((card.apr * 100).toFixed(2)),
     dueDay:   String(card.dueDay),
   } : EMPTY);
@@ -102,7 +101,7 @@ export function AddCardScreen({ t, card, onSave, onDelete, onBack }) {
     id: 'preview', name: f.name || 'Card name', issuer: f.issuer || 'Issuer',
     network: f.network, last4: f.last4 || '0000', grad: f.grad,
     balance: parseFloat(f.balance) || 0, statement: parseFloat(f.statement) || 0,
-    min: parseFloat(f.min) || 0, limit: parseFloat(f.limit) || 0,
+    min: parseFloat(f.min) || 0, limit: 0,
     apr: parseFloat(f.apr) / 100 || 0, due: new Date(), paid: false,
   };
 
@@ -110,7 +109,6 @@ export function AddCardScreen({ t, card, onSave, onDelete, onBack }) {
     const e = {};
     if (!f.name.trim()) e.name = 'Required';
     if (!f.balance && f.balance !== '0') e.balance = 'Required';
-    if (!f.limit)   e.limit   = 'Required';
     if (!f.apr)     e.apr     = 'Required';
     if (!f.dueDay || parseInt(f.dueDay) < 1 || parseInt(f.dueDay) > 31) e.dueDay = '1–31';
     return e;
@@ -130,7 +128,7 @@ export function AddCardScreen({ t, card, onSave, onDelete, onBack }) {
       balance:  parseFloat(f.balance) || 0,
       statement:parseFloat(f.statement || f.balance) || 0,
       min:      parseFloat(f.min) || 0,
-      limit:    parseFloat(f.limit) || 0,
+      limit:    card?.limit ?? 0,
       apr:      parseFloat(f.apr) / 100,
       dueDay,
       due:      computeDueDate(dueDay),
@@ -196,18 +194,9 @@ export function AddCardScreen({ t, card, onSave, onDelete, onBack }) {
           <Input value={f.statement} onChange={set('statement')} t={t} placeholder="Same as current balance" inputMode="decimal" prefix="$" />
         </Field>
 
-        <div style={{ display: 'flex', gap: 10 }}>
-          <div style={{ flex: 1 }}>
-            <Field label="Minimum payment" t={t}>
-              <Input value={f.min} onChange={set('min')} t={t} placeholder="25.00" inputMode="decimal" prefix="$" />
-            </Field>
-          </div>
-          <div style={{ flex: 1 }}>
-            <Field label="Credit limit" t={t} error={errors.limit}>
-              <Input value={f.limit} onChange={set('limit')} t={t} placeholder="5000" inputMode="decimal" prefix="$" />
-            </Field>
-          </div>
-        </div>
+        <Field label="Minimum payment" t={t}>
+          <Input value={f.min} onChange={set('min')} t={t} placeholder="25.00" inputMode="decimal" prefix="$" />
+        </Field>
 
         <div style={{ display: 'flex', gap: 10 }}>
           <div style={{ flex: 1 }}>

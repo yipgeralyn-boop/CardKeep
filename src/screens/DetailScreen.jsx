@@ -173,15 +173,17 @@ export function DetailScreen({ t, card, onBack, onLogPayment, onEdit }) {
           </div>
         </div>
 
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-            <span style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: t.textSoft }}>Credit used</span>
-            <span style={{ fontFamily: 'var(--font-ui)', fontSize: 13, fontWeight: 600, color: util > 50 ? t.warn : t.text }}>
-              {money(card.balance, false)} / {money(card.limit, false)} · {util}%
-            </span>
+        {card.limit > 0 && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+              <span style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: t.textSoft }}>Credit used</span>
+              <span style={{ fontFamily: 'var(--font-ui)', fontSize: 13, fontWeight: 600, color: util > 50 ? t.warn : t.text }}>
+                {money(card.balance, false)} / {money(card.limit, false)} · {util}%
+              </span>
+            </div>
+            <UtilBar pct={util} t={t} color={util > 50 ? t.warn : t.good} />
           </div>
-          <UtilBar pct={util} t={t} color={util > 50 ? t.warn : t.good} />
-        </div>
+        )}
       </div>
 
       {/* Log payment / undo */}
