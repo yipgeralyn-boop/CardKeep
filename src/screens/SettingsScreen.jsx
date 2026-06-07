@@ -1,7 +1,8 @@
 export function SettingsScreen({ t }) {
   const rows = [
-    ['Profile',  [['Name', 'Alex Rivera'], ['Email', 'alex@hey.com'], ['Linked bank', 'Checking •••• 2291']]],
-    ['Defaults', [['Default payment', 'Statement balance'], ['Autopay new cards', 'Off'], ['Currency', 'USD ($)']]],
+    ['Name',     'Alex Rivera'],
+    ['Email',    'alex@hey.com'],
+    ['Currency', 'USD ($)'],
   ];
 
   return (
@@ -18,19 +19,14 @@ export function SettingsScreen({ t }) {
         </div>
       </div>
 
-      {rows.map(([title, items]) => (
-        <div key={title} style={{ marginBottom: 22 }}>
-          <h2 style={{ margin: '0 4px 12px', fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 17, color: t.text }}>{title}</h2>
-          <div style={{ background: t.surface, borderRadius: t.radius, boxShadow: t.shadow, overflow: 'hidden' }}>
-            {items.map((row, i) => (
-              <div key={row[0]} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 16px', borderBottom: i < items.length - 1 ? `1px solid ${t.line}` : 'none' }}>
-                <span style={{ fontFamily: 'var(--font-ui)', fontSize: 14.5, color: t.textSoft }}>{row[0]}</span>
-                <span style={{ fontFamily: 'var(--font-ui)', fontSize: 14.5, fontWeight: 600, color: t.text }}>{row[1]}</span>
-              </div>
-            ))}
+      <div style={{ background: t.surface, borderRadius: t.radius, boxShadow: t.shadow, overflow: 'hidden', marginBottom: 22 }}>
+        {rows.map((row, i) => (
+          <div key={row[0]} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 16px', borderBottom: i < rows.length - 1 ? `1px solid ${t.line}` : 'none' }}>
+            <span style={{ fontFamily: 'var(--font-ui)', fontSize: 14.5, color: t.textSoft }}>{row[0]}</span>
+            <span style={{ fontFamily: 'var(--font-ui)', fontSize: 14.5, fontWeight: 600, color: t.text }}>{row[1]}</span>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
       <div style={{ textAlign: 'center', fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textFaint, padding: '6px 0 8px' }}>
         Tap ✨ below to restyle this app
