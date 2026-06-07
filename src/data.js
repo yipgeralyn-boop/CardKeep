@@ -143,12 +143,14 @@ export function simulatePayoff(cards, monthly) {
 }
 
 export function recommendedPayment(cards, targetMonths = 12) {
-  const total = cards.reduce((s, c) => s + c.balance, 0);
+  const total  = cards.reduce((s, c) => s + c.balance, 0);
   if (total <= 0) return 0;
+  const minSum = cards.filter((c) => c.balance > 0).reduce((s, c) => s + c.min, 0);
   const r = blendedApr(cards) / 12;
   const P = r === 0 ? total / targetMonths
     : total * r / (1 - Math.pow(1 + r, -targetMonths));
-  return Math.ceil(P / 10) * 10;
+  // Never recommend less than minimums + a small buffer
+  return Math.ceil(Math.max(P, minSum + 10) / 10) * 10;
 }
 
 export function fmtMonthYear(d) {

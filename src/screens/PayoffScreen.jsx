@@ -15,7 +15,7 @@ function PayoffChart({ series, t, payoffDate }) {
   });
   const line = pts.map((p, i) => `${i ? 'L' : 'M'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
   const area = `${line} L${pts[pts.length - 1][0].toFixed(1)},${H - pad} L${pts[0][0].toFixed(1)},${H - pad} Z`;
-  const finite = isFinite(series[series.length - 1]) && payoffDate;
+  const done = isFinite(series[series.length - 1]) && payoffDate;
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: H, display: 'block', overflow: 'visible' }}>
@@ -27,7 +27,7 @@ function PayoffChart({ series, t, payoffDate }) {
       </defs>
       <path d={area} fill="url(#payfill)" />
       <path d={line} fill="none" stroke={t.accent} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      {finite && <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r="5" fill={t.good} stroke={t.surface} strokeWidth="2.5" />}
+      {done && <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r="5" fill={t.good} stroke={t.surface} strokeWidth="2.5" />}
       <circle cx={pts[0][0]} cy={pts[0][1]} r="4" fill={t.accent} stroke={t.surface} strokeWidth="2.5" />
     </svg>
   );
@@ -42,7 +42,8 @@ export function PayoffScreen({ t, cards, monthly, setMonthly }) {
   const sim    = simulatePayoff(cards, monthly);
   const rec    = recommendedPayment(cards, 12);
   const recSim = simulatePayoff(cards, rec);
-  const interestSaved = isFinite(sim.interest) ? Math.max(0, sim.interest - recSim.interest) : null;
+  const interestSaved = isFinite(sim.interest) && isFinite(recSim.interest)
+    ? Math.max(0, sim.interest - recSim.interest) : null;
 
   const order  = [...debts].sort((a, b) => b.apr - a.apr);
   const attack = order[0];
@@ -50,6 +51,7 @@ export function PayoffScreen({ t, cards, monthly, setMonthly }) {
   const sliderMin = Math.ceil((minSum + 20) / 10) * 10;
   const sliderMax = Math.max(sliderMin + 100, Math.ceil(total / 100) * 100);
   const usingRec  = monthly === rec;
+  const cardWord  = debts.length === 1 ? 'card' : 'cards';
 
   if (total <= 0) {
     return (
@@ -69,7 +71,7 @@ export function PayoffScreen({ t, cards, monthly, setMonthly }) {
       <div style={{ marginBottom: 20 }}>
         <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 26, color: t.text }}>Payoff plan</div>
         <div style={{ fontFamily: 'var(--font-ui)', fontSize: 14, color: t.textSoft, marginTop: 2 }}>
-          {money(total)} across {debts.length} cards · {(apr * 100).toFixed(1)}% blended APR
+          {money(total)} across {debts.length} {cardWord} · {(apr * 100).toFixed(1)}% average interest rate
         </div>
       </div>
 
@@ -77,47 +79,48 @@ export function PayoffScreen({ t, cards, monthly, setMonthly }) {
       <div style={{ background: t.surface, borderRadius: t.radius + 4, padding: '18px 18px 14px', boxShadow: t.shadow, marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
           <div>
-            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12.5, fontWeight: 700, letterSpacing: 0.3, textTransform: 'uppercase', color: t.accent }}>Debt-free by</div>
+            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12.5, fontWeight: 700, letterSpacing: 0.3, textTransform: 'uppercase', color: t.accent }}>Paid off by</div>
             <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 34, color: t.text, letterSpacing: -0.5, marginTop: 3 }}>
-              {sim.stalled ? 'Not yet' : fmtMonthYear(sim.payoffDate)}
+              {sim.stalled ? 'Increase payment' : fmtMonthYear(sim.payoffDate)}
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textSoft }}>Time to clear</div>
+            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textSoft }}>Time left</div>
             <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 18, color: t.text, marginTop: 3, whiteSpace: 'nowrap' }}>{fmtMonths(sim.months)}</div>
           </div>
         </div>
         <PayoffChart series={sim.series} t={t} payoffDate={sim.payoffDate} />
         {sim.stalled && (
           <div style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: t.danger, marginTop: 8 }}>
-            That's below your combined minimums ({money(minSum)}). Increase the payment to make progress.
+            Your combined minimum payments are {money(minSum)}/mo. You need to pay more than that to reduce the balance.
           </div>
         )}
       </div>
 
       {/* Slider */}
       <div style={{ background: t.surface, borderRadius: t.radius, padding: '16px 18px 18px', boxShadow: t.shadow, marginBottom: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
-          <span style={{ fontFamily: 'var(--font-ui)', fontSize: 14.5, fontWeight: 600, color: t.text }}>Monthly payment</span>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
+          <span style={{ fontFamily: 'var(--font-ui)', fontSize: 14.5, fontWeight: 600, color: t.text }}>I can pay per month</span>
           <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22, color: t.accent }}>{money(monthly, false)}</span>
         </div>
+        <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: t.textFaint, marginBottom: 10 }}>Drag to see how faster payments save you money</div>
         <input type="range" min={sliderMin} max={sliderMax} step={10} value={Math.min(monthly, sliderMax)}
                onChange={(e) => setMonthly(parseInt(e.target.value))}
                style={{ width: '100%', accentColor: t.accent, height: 6, cursor: 'pointer' }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, marginBottom: 16 }}>
           <span style={{ fontFamily: 'var(--font-ui)', fontSize: 11.5, color: t.textFaint }}>min {money(sliderMin, false)}</span>
           <span style={{ fontFamily: 'var(--font-ui)', fontSize: 11.5, color: t.textFaint }}>{money(sliderMax, false)}</span>
         </div>
 
-        <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+        <div style={{ display: 'flex', gap: 10 }}>
           <div style={{ flex: 1, background: t.surface2, borderRadius: 14, padding: '11px 13px', border: `1px solid ${t.line}` }}>
-            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: t.textSoft }}>Total interest</div>
+            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: t.textSoft }}>Extra the bank charges</div>
             <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 18, color: isFinite(sim.interest) ? t.text : t.danger, marginTop: 2 }}>
               {isFinite(sim.interest) ? money(sim.interest) : '∞'}
             </div>
           </div>
           <div style={{ flex: 1, background: t.surface2, borderRadius: 14, padding: '11px 13px', border: `1px solid ${t.line}` }}>
-            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: t.textSoft }}>You'll pay back</div>
+            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: t.textSoft }}>Total you'll pay out</div>
             <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 18, color: t.text, marginTop: 2 }}>
               {isFinite(sim.interest) ? money(total + sim.interest, false) : '—'}
             </div>
@@ -125,29 +128,31 @@ export function PayoffScreen({ t, cards, monthly, setMonthly }) {
         </div>
       </div>
 
-      {/* Recommended callout */}
-      {!usingRec && (
+      {/* Recommended callout — only show when rec is valid and not already using it */}
+      {!usingRec && !recSim.stalled && recSim.payoffDate && (
         <div style={{ borderRadius: t.radius, padding: 2, marginBottom: 16, background: `linear-gradient(135deg, ${t.accent}, ${t.accent}99)`, boxShadow: t.shadow }}>
           <div style={{ background: t.surface, borderRadius: t.radius - 2, padding: '16px 18px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 10 }}>
               <div style={{ width: 32, height: 32, borderRadius: 9, background: `${t.accent}18`, color: t.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Ic.target width="19" height="19" />
               </div>
-              <span style={{ fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 15, color: t.text }}>Recommended</span>
+              <span style={{ fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 15, color: t.text }}>Suggested amount</span>
             </div>
             <div style={{ fontFamily: 'var(--font-ui)', fontSize: 14, color: t.textSoft, lineHeight: 1.5, marginBottom: 14 }}>
-              Pay <b style={{ color: t.text }}>{money(rec, false)}/mo</b> to be debt-free by <b style={{ color: t.text }}>{fmtMonthYear(recSim.payoffDate)}</b>
-              {interestSaved && interestSaved > 5 ? <> — saving <b style={{ color: t.good }}>{money(interestSaved)}</b> in interest.</> : '.'}
+              Paying <b style={{ color: t.text }}>{money(rec, false)}/mo</b> clears everything by <b style={{ color: t.text }}>{fmtMonthYear(recSim.payoffDate)}</b>
+              {interestSaved && interestSaved > 5
+                ? <>, saving you <b style={{ color: t.good }}>{money(interestSaved)}</b> in bank charges.</>
+                : '.'}
             </div>
             <Btn t={t} full onClick={() => setMonthly(rec)}>Use {money(rec, false)}/mo</Btn>
           </div>
         </div>
       )}
 
-      {/* Avalanche order */}
-      <h2 style={{ margin: '4px 4px 12px', fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 18, color: t.text }}>Smart payoff order</h2>
+      {/* Payoff order */}
+      <h2 style={{ margin: '4px 4px 12px', fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 18, color: t.text }}>Which card to pay first</h2>
       <div style={{ fontFamily: 'var(--font-ui)', fontSize: 13.5, color: t.textSoft, margin: '0 4px 14px', lineHeight: 1.5 }}>
-        Put every spare dollar on <b style={{ color: t.text }}>{attack.name}</b> first — it has the highest interest rate. Keep minimums on the rest.
+        Pay minimums on all cards, then put any extra money towards <b style={{ color: t.text }}>{attack.name}</b> — it charges the most interest.
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {order.map((c, i) => (
@@ -159,11 +164,11 @@ export function PayoffScreen({ t, cards, monthly, setMonthly }) {
             <CardArt card={c} size="sm" />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontFamily: 'var(--font-ui)', fontWeight: 600, fontSize: 15, color: t.text }}>{c.name}</div>
-              <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textFaint, marginTop: 1 }}>{(c.apr * 100).toFixed(2)}% APR</div>
+              <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textFaint, marginTop: 1 }}>{(c.apr * 100).toFixed(2)}% interest rate</div>
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 15.5, color: t.text }}>{money(c.balance)}</div>
-              {i === 0 && <div style={{ fontFamily: 'var(--font-ui)', fontSize: 11.5, fontWeight: 700, color: t.accent, marginTop: 2 }}>ATTACK FIRST</div>}
+              {i === 0 && <div style={{ fontFamily: 'var(--font-ui)', fontSize: 11.5, fontWeight: 700, color: t.accent, marginTop: 2 }}>PAY THIS FIRST</div>}
             </div>
           </div>
         ))}
