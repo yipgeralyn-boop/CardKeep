@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { makeTheme, CARDS, serializeCard, deserializeCard, computeDueDate } from './data';
+import { makeTheme, CARDS, serializeCard, deserializeCard } from './data';
 import { Ic } from './icons';
 import { IOSDevice } from './IOSDevice';
 import {
@@ -8,7 +8,7 @@ import {
 } from './TweaksPanel';
 import { HomeScreen }      from './screens/HomeScreen';
 import { AddCardScreen }   from './screens/AddCardScreen';
-import { DetailScreen, PaySheet, PaidSheet } from './screens/DetailScreen';
+import { DetailScreen } from './screens/DetailScreen';
 import { RemindersScreen } from './screens/RemindersScreen';
 import { PayoffScreen }    from './screens/PayoffScreen';
 import { SettingsScreen }  from './screens/SettingsScreen';
@@ -79,10 +79,9 @@ function App() {
   });
   const [tab,       setTab]      = useState('home');
   const [selected,  setSelected] = useState(null);
-  const [sheet,     setSheet]    = useState(null);
   const [monthly,   setMonthly]  = useState(450);
   const [reminders, setReminders] = useState({ '7d': true, '3d': true, due: true });
-  const [addingCard, setAddingCard] = useState(false);
+  const [addingCard,  setAddingCard]  = useState(false);
   const [editingCard, setEditingCard] = useState(null);
 
   const saveCards = (next) => {
@@ -90,16 +89,9 @@ function App() {
     localStorage.setItem('cardkeep_cards', JSON.stringify(next.map(serializeCard)));
   };
 
-  const selCard   = cards.find((c) => c.id === selected);
-  const sheetCard = sheet && cards.find((c) => c.id === sheet.cardId);
+  const selCard = cards.find((c) => c.id === selected);
 
-  const openPay = (card) => setSheet({ type: 'pay', cardId: card.id });
-  const confirmPay = (amount) => {
-    saveCards(cards.map((c) =>
-      c.id === sheet.cardId ? { ...c, paid: true, balance: Math.max(0, c.balance - amount) } : c
-    ));
-    setSheet({ type: 'paid', cardId: sheet.cardId, amount });
-  };
+  const togglePaid = (id) => saveCards(cards.map((c) => c.id === id ? { ...c, paid: !c.paid } : c));
 
   const handleSaveCard = (card) => {
     if (editingCard) {
@@ -141,9 +133,9 @@ function App() {
             onBack={() => { setAddingCard(false); setEditingCard(null); }}
           />
         ) : showDetail ? (
-          <DetailScreen t={t} card={selCard} onBack={() => setSelected(null)} onPay={() => openPay(selCard)} onEdit={() => setEditingCard(selCard)} />
+          <DetailScreen t={t} card={selCard} onBack={() => setSelected(null)} onMarkPaid={() => togglePaid(selCard.id)} onEdit={() => setEditingCard(selCard)} />
         ) : tab === 'home' ? (
-          <HomeScreen t={t} cards={cards} onSelect={(c) => setSelected(c.id)} onPay={openPay} onOpenPlan={() => setTab('plan')} onAddCard={() => setAddingCard(true)} />
+          <HomeScreen t={t} cards={cards} onSelect={(c) => setSelected(c.id)} onOpenPlan={() => setTab('plan')} onAddCard={() => setAddingCard(true)} />
         ) : tab === 'plan' ? (
           <PayoffScreen t={t} cards={cards} monthly={monthly} setMonthly={setMonthly} />
         ) : tab === 'reminders' ? (
@@ -155,13 +147,6 @@ function App() {
       </div>
 
       {!showDetail && !showAddEdit && <TabBar tab={tab} setTab={(x) => { setSelected(null); setTab(x); }} t={t} />}
-
-      {sheet?.type === 'pay' && sheetCard && (
-        <PaySheet t={t} card={sheetCard} onClose={() => setSheet(null)} onConfirm={confirmPay} />
-      )}
-      {sheet?.type === 'paid' && sheetCard && (
-        <PaidSheet t={t} card={sheetCard} amount={sheet.amount} onClose={() => { setSheet(null); setSelected(null); }} />
-      )}
 
       <TweaksPanel>
         <TweakSection label="Appearance" />

@@ -32,7 +32,7 @@ function CardRow({ card, t, onClick }) {
   );
 }
 
-function HeroCard({ card, t, onPay, onOpen }) {
+function HeroCard({ card, t, onOpen }) {
   const d = daysUntil(card.due);
   const status = cardStatus(card);
   const sc = statusColor(status, t);
@@ -84,10 +84,7 @@ function HeroCard({ card, t, onPay, onOpen }) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 10 }}>
-          <Btn t={t} onClick={onPay} style={{ flex: 1 }}>Pay now</Btn>
-          <Btn t={t} variant="soft" onClick={onOpen} style={{ flex: '0 0 auto' }}>Details</Btn>
-        </div>
+        <Btn t={t} variant="soft" onClick={onOpen} full>View details</Btn>
       </div>
     </div>
   );
@@ -108,7 +105,7 @@ function EmptyState({ t, onAdd }) {
   );
 }
 
-export function HomeScreen({ t, cards, onSelect, onPay, onOpenPlan, onAddCard }) {
+export function HomeScreen({ t, cards, onSelect, onOpenPlan, onAddCard }) {
   const unpaid = cards.filter((c) => !c.paid);
   const paid   = cards.filter((c) =>  c.paid);
   const next   = [...unpaid].sort((a, b) => a.due - b.due)[0];
@@ -144,7 +141,7 @@ export function HomeScreen({ t, cards, onSelect, onPay, onOpenPlan, onAddCard })
       {!cards.length && <EmptyState t={t} onAdd={onAddCard} />}
 
       {/* Hero card */}
-      {next && <HeroCard card={next} t={t} onPay={() => onPay(next)} onOpen={() => onSelect(next)} />}
+      {next && <HeroCard card={next} t={t} onOpen={() => onSelect(next)} />}
 
       {/* Summary chips */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 22 }}>
