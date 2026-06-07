@@ -97,12 +97,16 @@ export function UpgradeSheet({ t, onClose, onPurchase }) {
       </button>
 
       <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginBottom: 6 }}>
-        Then {plan === 'yearly' ? '$49.99/yr' : '$6.99/mo'} · Cancel anytime
+        Then {plan === 'yearly' ? '$49.99/yr' : '$6.99/mo'} · Cancel anytime before trial ends
       </div>
 
       <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: 'var(--font-ui)', fontSize: 13, color: 'rgba(255,255,255,0.4)', padding: '8px 0', WebkitTapHighlightColor: 'transparent' }}>
         Maybe later
       </button>
+
+      <div style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'rgba(255,255,255,0.22)', textAlign: 'center', marginTop: 8, lineHeight: 1.6, padding: '0 8px' }}>
+        To cancel your free trial, go to Settings → Apple ID → Subscriptions → CardKeep → Cancel Free Trial before the 7 days are up. No charge if cancelled in time.
+      </div>
     </div>
   );
 }

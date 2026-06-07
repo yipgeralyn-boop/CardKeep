@@ -147,7 +147,14 @@ export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle,
             {isPro ? 'Unlimited cards & all features' : '1 card included · upgrade for more'}
           </div>
         </div>
-        {!isPro && (
+        {isPro ? (
+          <button
+            onClick={() => window.open('itms-apps://apps.apple.com/account/subscriptions', '_blank')}
+            style={{ border: 'none', borderRadius: 12, padding: '8px 14px', cursor: 'pointer', background: t.surface2, color: t.textSoft, fontFamily: 'var(--font-ui)', fontWeight: 600, fontSize: 12.5, WebkitTapHighlightColor: 'transparent', flexShrink: 0 }}
+          >
+            Manage
+          </button>
+        ) : (
           <button onClick={onUpgrade} style={{ border: 'none', borderRadius: 12, padding: '8px 14px', cursor: 'pointer', background: t.accent, color: t.onAccent, fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 13, WebkitTapHighlightColor: 'transparent', flexShrink: 0 }}>
             Upgrade
           </button>
