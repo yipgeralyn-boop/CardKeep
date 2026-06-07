@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './firebase';
 import { syncWidget } from './plugins/widgetBridge';
-import { makeTheme, CARDS, serializeCard, deserializeCard, computeDueDate } from './data';
+import { makeTheme, serializeCard, deserializeCard, computeDueDate } from './data';
 import { Ic } from './icons';
 import { IOSDevice } from './IOSDevice';
 import {
@@ -27,6 +27,8 @@ const FONT_PAIRS = {
 const TWEAK_DEFAULTS = {
   accent: '#5B4FD6', dark: false, radius: 22, font: 'grotesque', tone: 'warm',
 };
+
+const FREE_CARD_LIMIT = 1;
 
 // ── Tab bar ──────────────────────────────────────────────────────
 function TabBar({ tab, setTab, t }) {
@@ -67,56 +69,52 @@ function TabBar({ tab, setTab, t }) {
   );
 }
 
-// ── Main app ──────────────────────────────────────────────────────
-function App() {
-  const [authUser,  setAuthUser]  = useState(undefined); // undefined = loading, null = signed out
-  useEffect(() => onAuthStateChanged(auth, (u) => setAuthUser(u ?? null)), []);
-
+// ── Main app — scoped to a single authenticated user ──────────────
+// Re-mounts from scratch when uid changes, so every account starts clean.
+function MainApp({ uid, userEmail }) {
   const [tw, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const t    = makeTheme({ dark: tw.dark, accent: tw.accent, radius: tw.radius });
   const pair = FONT_PAIRS[tw.font] || FONT_PAIRS.grotesque;
 
+  // All localStorage keys are scoped to this user's uid
+  const key = (name) => `${name}_${uid}`;
+
   const [cards, setCards] = useState(() => {
     try {
-      const raw = localStorage.getItem('cardkeep_cards');
-      return raw ? JSON.parse(raw).map(deserializeCard) : CARDS;
-    } catch { return CARDS; }
+      const raw = localStorage.getItem(key('cardkeep_cards'));
+      return raw ? JSON.parse(raw).map(deserializeCard) : [];
+    } catch { return []; }
   });
 
   const [userName, setUserName] = useState(() =>
-    localStorage.getItem('cardkeep_name') || ''
+    localStorage.getItem(key('cardkeep_name')) || ''
   );
 
-  const [tab,         setTab]         = useState('home');
-  const [selected,    setSelected]    = useState(null);
-  const [monthly,     setMonthly]     = useState(450);
-  const [reminders,   setReminders]   = useState({ '7d': true, '3d': true, due: true });
-  const [addingCard,    setAddingCard]    = useState(false);
-  const [editingCard,   setEditingCard]   = useState(null);
-  const [showConfetti,  setShowConfetti]  = useState(false);
-  const [isPro,         setIsPro]         = useState(() => localStorage.getItem('cardkeep_pro') === '1');
-  const [showUpgrade,   setShowUpgrade]   = useState(false);
-
-  const FREE_CARD_LIMIT = 1;
+  const [isPro,        setIsPro]        = useState(() => localStorage.getItem(key('cardkeep_pro')) === '1');
+  const [tab,          setTab]          = useState('home');
+  const [selected,     setSelected]     = useState(null);
+  const [monthly,      setMonthly]      = useState(450);
+  const [reminders,    setReminders]    = useState({ '7d': true, '3d': true, due: true });
+  const [addingCard,   setAddingCard]   = useState(false);
+  const [editingCard,  setEditingCard]  = useState(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [showUpgrade,  setShowUpgrade]  = useState(false);
 
   const saveCards = (next) => {
     setCards(next);
-    localStorage.setItem('cardkeep_cards', JSON.stringify(next.map(serializeCard)));
+    localStorage.setItem(key('cardkeep_cards'), JSON.stringify(next.map(serializeCard)));
     syncWidget(next);
   };
 
   const saveName = (name) => {
     setUserName(name);
-    localStorage.setItem('cardkeep_name', name);
+    localStorage.setItem(key('cardkeep_name'), name);
   };
 
   const selCard = cards.find((c) => c.id === selected);
 
   const newStatement = (id, amount) => {
-    saveCards(cards.map((c) => {
-      if (c.id !== id) return c;
-      return { ...c, statement: amount, balance: amount, paid: false, due: computeDueDate(c.dueDay) };
-    }));
+    saveCards(cards.map((c) => c.id !== id ? c : { ...c, statement: amount, balance: amount, paid: false, due: computeDueDate(c.dueDay) }));
   };
 
   const logPayment = (id, amount) => {
@@ -131,14 +129,8 @@ function App() {
     if (justCleared) setShowConfetti(true);
   };
 
-  // Reset all cards to unpaid with refreshed due dates — call at new statement cycle
   const resetCycle = () => {
-    saveCards(cards.map((c) => ({
-      ...c,
-      paid:    false,
-      balance: c.statement,
-      due:     computeDueDate(c.dueDay),
-    })));
+    saveCards(cards.map((c) => ({ ...c, paid: false, balance: c.statement, due: computeDueDate(c.dueDay) })));
   };
 
   const handleAddCard = () => {
@@ -149,10 +141,10 @@ function App() {
     }
   };
 
-  const handlePurchase = (plan) => {
-    // TODO: wire RevenueCat purchase for `plan` ('monthly' | 'yearly')
+  const handlePurchase = () => {
+    // TODO: wire RevenueCat purchase
     setIsPro(true);
-    localStorage.setItem('cardkeep_pro', '1');
+    localStorage.setItem(key('cardkeep_pro'), '1');
     setShowUpgrade(false);
     setAddingCard(true);
   };
@@ -180,20 +172,6 @@ function App() {
 
   const showDetail  = selCard && !editingCard && (tab === 'home' || tab === 'reminders');
   const showAddEdit = addingCard || editingCard;
-
-  // Loading auth state
-  if (authUser === undefined) return (
-    <div style={{ width: '100%', height: '100%', background: '#1C1640', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ width: 36, height: 36, borderRadius: 999, border: '3px solid rgba(123,111,255,0.3)', borderTopColor: '#7B6FFF', animation: 'spin .8s linear infinite' }} />
-    </div>
-  );
-
-  // Not signed in
-  if (!authUser) return (
-    <div style={{ '--font-display': pair.display, '--font-ui': pair.ui, width: '100%', height: '100%', position: 'relative' }}>
-      <AuthScreen />
-    </div>
-  );
 
   return (
     <div style={{
@@ -224,7 +202,7 @@ function App() {
             cards={cards} onResetCycle={resetCycle}
             darkMode={tw.dark} onDarkToggle={(v) => setTweak('dark', v)}
             isPro={isPro} onUpgrade={() => setShowUpgrade(true)}
-            userEmail={authUser?.email} onSignOut={() => signOut(auth)} />
+            userEmail={userEmail} onSignOut={() => signOut(auth)} />
         )}
       </div>
 
@@ -268,6 +246,30 @@ function App() {
       </TweaksPanel>
     </div>
   );
+}
+
+// ── Auth shell — resolves user then mounts MainApp ────────────────
+function App() {
+  const [tw]       = useTweaks(TWEAK_DEFAULTS);
+  const pair       = FONT_PAIRS[tw.font] || FONT_PAIRS.grotesque;
+  const [authUser, setAuthUser] = useState(undefined);
+
+  useEffect(() => onAuthStateChanged(auth, (u) => setAuthUser(u ?? null)), []);
+
+  if (authUser === undefined) return (
+    <div style={{ width: '100%', height: '100%', background: '#1C1640', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: 36, height: 36, borderRadius: 999, border: '3px solid rgba(123,111,255,0.3)', borderTopColor: '#7B6FFF', animation: 'spin .8s linear infinite' }} />
+    </div>
+  );
+
+  if (!authUser) return (
+    <div style={{ '--font-display': pair.display, '--font-ui': pair.ui, width: '100%', height: '100%', position: 'relative' }}>
+      <AuthScreen />
+    </div>
+  );
+
+  // key={authUser.uid} forces a full remount when account switches — fresh state, fresh localStorage reads
+  return <MainApp key={authUser.uid} uid={authUser.uid} userEmail={authUser.email} />;
 }
 
 // ── Root: scale phone to viewport ────────────────────────────────
