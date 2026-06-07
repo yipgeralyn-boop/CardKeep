@@ -143,8 +143,8 @@ export function HomeScreen({ t, cards, onSelect, onOpenPlan, onAddCard }) {
       {/* Hero card */}
       {next && <HeroCard card={next} t={t} onOpen={() => onSelect(next)} />}
 
-      {/* Summary chips */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: 22 }}>
+      {/* Summary chips — only when cards exist */}
+      {cards.length > 0 && <div style={{ display: 'flex', gap: 10, marginBottom: 22 }}>
         <div style={{ flex: 1, background: t.surface, borderRadius: t.radius, padding: '13px 15px', boxShadow: t.shadow }}>
           <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textSoft }}>Due this month</div>
           <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 21, color: t.text, marginTop: 3 }}>{money(totalDue, false)}</div>
@@ -156,7 +156,7 @@ export function HomeScreen({ t, cards, onSelect, onOpenPlan, onAddCard }) {
             <Ic.check width="16" height="16" style={{ color: t.good }} />
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* Payoff teaser */}
       {planSim && !planSim.stalled && (
