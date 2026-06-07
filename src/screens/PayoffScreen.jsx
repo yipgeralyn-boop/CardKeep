@@ -128,8 +128,8 @@ export function PayoffScreen({ t, cards, monthly, setMonthly }) {
         </div>
       </div>
 
-      {/* Recommended callout — only show when rec is valid and not already using it */}
-      {!usingRec && !recSim.stalled && recSim.payoffDate && (
+      {/* Recommended callout — only show when user is paying less than recommended */}
+      {monthly < rec && !recSim.stalled && recSim.payoffDate && (
         <div style={{ borderRadius: t.radius, padding: 2, marginBottom: 16, background: `linear-gradient(135deg, ${t.accent}, ${t.accent}99)`, boxShadow: t.shadow }}>
           <div style={{ background: t.surface, borderRadius: t.radius - 2, padding: '16px 18px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 10 }}>
