@@ -17,7 +17,7 @@ function Stat({ label, value, t, accent }) {
   );
 }
 
-export function DetailScreen({ t, card, onBack, onPay }) {
+export function DetailScreen({ t, card, onBack, onPay, onEdit }) {
   const status = cardStatus(card);
   const sc = statusColor(status, t);
   const util = Math.round((card.balance / card.limit) * 100);
@@ -29,7 +29,7 @@ export function DetailScreen({ t, card, onBack, onPay }) {
         <button onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'transparent', cursor: 'pointer', color: t.accent, fontFamily: 'var(--font-ui)', fontWeight: 600, fontSize: 16, padding: 0, WebkitTapHighlightColor: 'transparent' }}>
           <Ic.back width="20" height="20" /> Cards
         </button>
-        <button style={{ border: 'none', background: t.surface, width: 38, height: 38, borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: t.shadow, color: t.textSoft }}>
+        <button onClick={onEdit} style={{ border: 'none', background: t.surface, width: 38, height: 38, borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: t.shadow, color: t.textSoft, WebkitTapHighlightColor: 'transparent' }}>
           <Ic.gear width="19" height="19" />
         </button>
       </div>

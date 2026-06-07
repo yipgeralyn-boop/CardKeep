@@ -30,43 +30,42 @@ export function makeTheme({ dark = false, accent = '#5B4FD6', radius = 22 } = {}
   };
 }
 
-// ─── Mock data — "today" is Thu Jun 4, 2026 ───────────────────
-export const TODAY = new Date(2026, 5, 4);
+// ─── Real today ────────────────────────────────────────────────
+export const TODAY = new Date();
+TODAY.setHours(0, 0, 0, 0);
 
-export const CARDS = [
-  {
-    id: 'sapphire',
-    name: 'Sapphire Reserve',
-    issuer: 'Chase', network: 'VISA', last4: '4021',
-    grad: ['#3D4E8C', '#26408B'],
-    balance: 1284.50, statement: 1284.50, min: 35, limit: 12000, apr: 0.2249,
-    due: new Date(2026, 5, 7), paid: false, autopay: false,
-  },
-  {
-    id: 'everyday',
-    name: 'Everyday Cash',
-    issuer: 'Citi', network: 'MASTERCARD', last4: '8830',
-    grad: ['#C26B3A', '#A04A2B'],
-    balance: 642.18, statement: 642.18, min: 25, limit: 6000, apr: 0.1999,
-    due: new Date(2026, 5, 13), paid: false, autopay: false,
-  },
-  {
-    id: 'platinum',
-    name: 'Platinum',
-    issuer: 'Amex', network: 'AMEX', last4: '1007',
-    grad: ['#5A5F66', '#33373D'],
-    balance: 3950.00, statement: 3950.00, min: 120, limit: 20000, apr: 0.2624,
-    due: new Date(2026, 5, 20), paid: false, autopay: true,
-  },
-  {
-    id: 'freedom',
-    name: 'Freedom Flex',
-    issuer: 'Chase', network: 'VISA', last4: '5567',
-    grad: ['#2E8B6B', '#1F6E54'],
-    balance: 0, statement: 318.40, min: 25, limit: 8000, apr: 0.2174,
-    due: new Date(2026, 5, 28), paid: true, autopay: false,
-  },
+export const CARDS = []; // users add their own cards
+
+// ─── Card gradient presets ─────────────────────────────────────
+export const GRAD_PRESETS = [
+  ['#3D4E8C', '#26408B'],
+  ['#2E8B6B', '#1F6E54'],
+  ['#C26B3A', '#A04A2B'],
+  ['#5A5F66', '#33373D'],
+  ['#7B3FA0', '#5C2D78'],
+  ['#C23A4A', '#9A2535'],
+  ['#2A6FDB', '#1A4FAA'],
+  ['#C49B2E', '#9A7620'],
 ];
+
+// Compute the next upcoming due date from a day-of-month (1–31)
+export function computeDueDate(dueDay) {
+  const t = new Date();
+  t.setHours(0, 0, 0, 0);
+  const thisMonth = new Date(t.getFullYear(), t.getMonth(), dueDay);
+  if (thisMonth >= t) return thisMonth;
+  return new Date(t.getFullYear(), t.getMonth() + 1, dueDay);
+}
+
+// Serialize a card for localStorage (Date → ISO string)
+export function serializeCard(c) {
+  return { ...c, due: c.due.toISOString() };
+}
+
+// Rehydrate a card from localStorage (ISO string → Date)
+export function deserializeCard(c) {
+  return { ...c, due: new Date(c.due) };
+}
 
 // ─── Helpers ───────────────────────────────────────────────────
 export const money = (n, cents = true) =>

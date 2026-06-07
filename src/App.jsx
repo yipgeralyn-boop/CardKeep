@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { makeTheme, CARDS } from './data';
+import { makeTheme, CARDS, serializeCard, deserializeCard, computeDueDate } from './data';
 import { Ic } from './icons';
 import { IOSDevice } from './IOSDevice';
 import {
@@ -7,6 +7,7 @@ import {
   TweakToggle, TweakSlider, TweakRadio,
 } from './TweaksPanel';
 import { HomeScreen }      from './screens/HomeScreen';
+import { AddCardScreen }   from './screens/AddCardScreen';
 import { DetailScreen, PaySheet, PaidSheet } from './screens/DetailScreen';
 import { RemindersScreen } from './screens/RemindersScreen';
 import { PayoffScreen }    from './screens/PayoffScreen';
@@ -70,28 +71,59 @@ function App() {
   const t    = makeTheme({ dark: tw.dark, accent: tw.accent, radius: tw.radius });
   const pair = FONT_PAIRS[tw.font] || FONT_PAIRS.grotesque;
 
-  const [cards,    setCards]    = useState(CARDS);
-  const [tab,      setTab]      = useState('home');
-  const [selected, setSelected] = useState(null);
-  const [sheet,    setSheet]    = useState(null);
-  const [monthly,  setMonthly]  = useState(450);
+  const [cards, setCards] = useState(() => {
+    try {
+      const raw = localStorage.getItem('cardkeep_cards');
+      return raw ? JSON.parse(raw).map(deserializeCard) : CARDS;
+    } catch { return CARDS; }
+  });
+  const [tab,       setTab]      = useState('home');
+  const [selected,  setSelected] = useState(null);
+  const [sheet,     setSheet]    = useState(null);
+  const [monthly,   setMonthly]  = useState(450);
   const [reminders, setReminders] = useState({ '7d': true, '3d': true, due: true });
+  const [addingCard, setAddingCard] = useState(false);
+  const [editingCard, setEditingCard] = useState(null);
+
+  const saveCards = (next) => {
+    setCards(next);
+    localStorage.setItem('cardkeep_cards', JSON.stringify(next.map(serializeCard)));
+  };
 
   const selCard   = cards.find((c) => c.id === selected);
   const sheetCard = sheet && cards.find((c) => c.id === sheet.cardId);
 
   const openPay = (card) => setSheet({ type: 'pay', cardId: card.id });
   const confirmPay = (amount) => {
-    setCards((prev) => prev.map((c) =>
+    saveCards(cards.map((c) =>
       c.id === sheet.cardId ? { ...c, paid: true, balance: Math.max(0, c.balance - amount) } : c
     ));
     setSheet({ type: 'paid', cardId: sheet.cardId, amount });
   };
 
+  const handleSaveCard = (card) => {
+    if (editingCard) {
+      saveCards(cards.map((c) => c.id === card.id ? card : c));
+      setEditingCard(null);
+      setSelected(card.id);
+    } else {
+      saveCards([...cards, card]);
+      setAddingCard(false);
+      setSelected(card.id);
+    }
+  };
+
+  const handleDeleteCard = (id) => {
+    saveCards(cards.filter((c) => c.id !== id));
+    setEditingCard(null);
+    setSelected(null);
+  };
+
   const scrollRef = useRef(null);
   useEffect(() => { if (scrollRef.current) scrollRef.current.scrollTop = 0; }, [tab, selected]);
 
-  const showDetail = selCard && (tab === 'home' || tab === 'reminders');
+  const showDetail  = selCard && !editingCard && (tab === 'home' || tab === 'reminders');
+  const showAddEdit = addingCard || editingCard;
 
   return (
     <div style={{
@@ -100,10 +132,18 @@ function App() {
       transition: 'background .3s',
     }}>
       <div ref={scrollRef} style={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden', paddingTop: 58, paddingBottom: 112 }}>
-        {showDetail ? (
-          <DetailScreen t={t} card={selCard} onBack={() => setSelected(null)} onPay={() => openPay(selCard)} />
+        {showAddEdit ? (
+          <AddCardScreen
+            t={t}
+            card={editingCard}
+            onSave={handleSaveCard}
+            onDelete={handleDeleteCard}
+            onBack={() => { setAddingCard(false); setEditingCard(null); }}
+          />
+        ) : showDetail ? (
+          <DetailScreen t={t} card={selCard} onBack={() => setSelected(null)} onPay={() => openPay(selCard)} onEdit={() => setEditingCard(selCard)} />
         ) : tab === 'home' ? (
-          <HomeScreen t={t} cards={cards} onSelect={(c) => setSelected(c.id)} onPay={openPay} onOpenPlan={() => setTab('plan')} />
+          <HomeScreen t={t} cards={cards} onSelect={(c) => setSelected(c.id)} onPay={openPay} onOpenPlan={() => setTab('plan')} onAddCard={() => setAddingCard(true)} />
         ) : tab === 'plan' ? (
           <PayoffScreen t={t} cards={cards} monthly={monthly} setMonthly={setMonthly} />
         ) : tab === 'reminders' ? (
@@ -114,7 +154,7 @@ function App() {
         )}
       </div>
 
-      {!showDetail && <TabBar tab={tab} setTab={(x) => { setSelected(null); setTab(x); }} t={t} />}
+      {!showDetail && !showAddEdit && <TabBar tab={tab} setTab={(x) => { setSelected(null); setTab(x); }} t={t} />}
 
       {sheet?.type === 'pay' && sheetCard && (
         <PaySheet t={t} card={sheetCard} onClose={() => setSheet(null)} onConfirm={confirmPay} />

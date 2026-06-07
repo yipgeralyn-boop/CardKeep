@@ -93,7 +93,22 @@ function HeroCard({ card, t, onPay, onOpen }) {
   );
 }
 
-export function HomeScreen({ t, cards, onSelect, onPay, onOpenPlan }) {
+function EmptyState({ t, onAdd }) {
+  return (
+    <div style={{ textAlign: 'center', padding: '40px 24px 48px', background: t.surface, borderRadius: t.radius + 4, boxShadow: t.shadow }}>
+      <Mascot mood="idle" size={110} t={t} style={{ marginBottom: 10 }} />
+      <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22, color: t.text, marginBottom: 8 }}>No cards yet</div>
+      <div style={{ fontFamily: 'var(--font-ui)', fontSize: 15, color: t.textSoft, lineHeight: 1.5, marginBottom: 24 }}>
+        Add your credit cards to track due dates and plan your payoff.
+      </div>
+      <Btn t={t} onClick={onAdd} full>
+        <Ic.plus width="18" height="18" /> Add your first card
+      </Btn>
+    </div>
+  );
+}
+
+export function HomeScreen({ t, cards, onSelect, onPay, onOpenPlan, onAddCard }) {
   const unpaid = cards.filter((c) => !c.paid);
   const paid   = cards.filter((c) =>  c.paid);
   const next   = [...unpaid].sort((a, b) => a.due - b.due)[0];
@@ -109,18 +124,24 @@ export function HomeScreen({ t, cards, onSelect, onPay, onOpenPlan }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
           <Mascot mood="happy" size={50} t={t} style={{ marginTop: -2, flexShrink: 0 }} />
           <div>
-            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 14, color: t.textSoft }}>Good morning, Alex</div>
+            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 14, color: t.textSoft }}>CardKeep</div>
             <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: t.text, letterSpacing: 0.1, marginTop: 1 }}>
-              {unpaid.length ? "Let's stay ahead" : "You're all caught up"}
+              {!cards.length ? 'Welcome' : unpaid.length ? "Let's stay ahead" : "You're all caught up"}
             </div>
           </div>
         </div>
-        <div style={{
+        <button onClick={onAddCard} style={{
           width: 42, height: 42, borderRadius: 999, background: t.accent, color: t.onAccent,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 16, flexShrink: 0,
-        }}>A</div>
+          border: 'none', cursor: 'pointer', boxShadow: `0 4px 12px ${t.accent}55`, flexShrink: 0,
+          WebkitTapHighlightColor: 'transparent',
+        }}>
+          <Ic.plus width="20" height="20" />
+        </button>
       </div>
+
+      {/* Empty state */}
+      {!cards.length && <EmptyState t={t} onAdd={onAddCard} />}
 
       {/* Hero card */}
       {next && <HeroCard card={next} t={t} onPay={() => onPay(next)} onOpen={() => onSelect(next)} />}
@@ -166,13 +187,19 @@ export function HomeScreen({ t, cards, onSelect, onPay, onOpenPlan }) {
       )}
 
       {/* Card list */}
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', padding: '0 4px 10px' }}>
-        <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 19, color: t.text }}>Your cards</h2>
-        <span style={{ fontFamily: 'var(--font-ui)', fontSize: 13.5, color: t.accent, fontWeight: 600 }}>{cards.length} total</span>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {cards.map((c) => <CardRow key={c.id} card={c} t={t} onClick={() => onSelect(c)} />)}
-      </div>
+      {cards.length > 0 && (
+        <>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', padding: '0 4px 10px' }}>
+            <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 19, color: t.text }}>Your cards</h2>
+            <button onClick={onAddCard} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: t.accent, fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 13.5, padding: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Ic.plus width="14" height="14" /> Add
+            </button>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {cards.map((c) => <CardRow key={c.id} card={c} t={t} onClick={() => onSelect(c)} />)}
+          </div>
+        </>
+      )}
     </div>
   );
 }
