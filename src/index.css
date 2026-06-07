@@ -1,0 +1,42 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  background: #E9E5DC;
+  font-family: 'Figtree', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+#root { min-height: 100vh; }
+input::placeholder { color: rgba(150,145,135,0.6); }
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@keyframes fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pop {
+  0%   { transform: scale(0.4); opacity: 0; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+@keyframes mascotBounce {
+  0%   { transform: translateY(14px) scale(0.7); }
+  55%  { transform: translateY(-10px) scale(1.06); }
+  100% { transform: translateY(0) scale(1); }
+}
+@keyframes mascotIdle {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%       { transform: translateY(-4px) rotate(-1.5deg); }
+}
+@keyframes mascotSprout {
+  0%   { transform: scaleY(0.2) translateY(10px); }
+  100% { transform: scaleY(1) translateY(0); }
+}
+@keyframes sparklePop {
+  0%   { transform: scale(0);   opacity: 0; }
+  45%  { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1);   opacity: 0.95; }
+}
+
+::-webkit-scrollbar { width: 0; height: 0; }
