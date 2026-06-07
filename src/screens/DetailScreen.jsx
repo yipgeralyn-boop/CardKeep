@@ -109,8 +109,36 @@ function LogPaymentSheet({ t, card, onClose, onConfirm }) {
 }
 
 // ── Detail screen ─────────────────────────────────────────────
-export function DetailScreen({ t, card, onBack, onLogPayment, onEdit }) {
-  const [showSheet, setShowSheet] = useState(false);
+function NewStatementSheet({ t, onClose, onConfirm }) {
+  const [value, setValue] = useState('');
+  const amount = parseFloat(value) || 0;
+
+  return (
+    <SheetShell t={t} onClose={onClose} title="New statement">
+      <div style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: t.textSoft, marginBottom: 14, marginTop: -8 }}>
+        Enter the new balance from your latest statement. This resets the card for the new billing cycle.
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: t.surface2, borderRadius: 16, padding: '13px 16px', border: `1.5px solid ${t.accent}`, marginBottom: 16 }}>
+        <span style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 22, color: t.textSoft }}>$</span>
+        <input
+          autoFocus
+          value={value}
+          onChange={(e) => setValue(e.target.value.replace(/[^0-9.]/g, ''))}
+          placeholder="0.00"
+          inputMode="decimal"
+          style={{ border: 'none', outline: 'none', background: 'transparent', flex: 1, fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 22, color: t.text, width: '100%' }}
+        />
+      </div>
+      <Btn t={t} full disabled={amount <= 0} onClick={() => onConfirm(amount)}>
+        Set new statement {amount > 0 ? `· $${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : ''}
+      </Btn>
+    </SheetShell>
+  );
+}
+
+export function DetailScreen({ t, card, onBack, onLogPayment, onNewStatement, onEdit }) {
+  const [showSheet,         setShowSheet]         = useState(false);
+  const [showNewStatement,  setShowNewStatement]   = useState(false);
   const status = cardStatus(card);
   const sc     = statusColor(status, t);
   const util   = Math.round((card.balance / card.limit) * 100);
@@ -118,6 +146,11 @@ export function DetailScreen({ t, card, onBack, onLogPayment, onEdit }) {
   const handleConfirm = (amount) => {
     setShowSheet(false);
     onLogPayment(amount);
+  };
+
+  const handleNewStatement = (amount) => {
+    setShowNewStatement(false);
+    onNewStatement(amount);
   };
 
   return (
@@ -187,7 +220,7 @@ export function DetailScreen({ t, card, onBack, onLogPayment, onEdit }) {
       </div>
 
       {/* Log payment / undo */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
         {!card.paid && (
           <Btn t={t} full onClick={() => setShowSheet(true)}>
             <Ic.check width="17" height="17" /> Log a payment
@@ -198,6 +231,13 @@ export function DetailScreen({ t, card, onBack, onLogPayment, onEdit }) {
             Undo — mark as unpaid
           </Btn>
         )}
+      </div>
+
+      {/* New statement */}
+      <div style={{ marginBottom: 14 }}>
+        <Btn t={t} variant="soft" full onClick={() => setShowNewStatement(true)}>
+          <Ic.flag width="16" height="16" /> New statement arrived
+        </Btn>
       </div>
 
       {/* Details list */}
@@ -216,6 +256,9 @@ export function DetailScreen({ t, card, onBack, onLogPayment, onEdit }) {
 
       {showSheet && (
         <LogPaymentSheet t={t} card={card} onClose={() => setShowSheet(false)} onConfirm={handleConfirm} />
+      )}
+      {showNewStatement && (
+        <NewStatementSheet t={t} onClose={() => setShowNewStatement(false)} onConfirm={handleNewStatement} />
       )}
     </div>
   );

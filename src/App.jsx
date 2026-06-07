@@ -97,6 +97,13 @@ function App() {
 
   const selCard = cards.find((c) => c.id === selected);
 
+  const newStatement = (id, amount) => {
+    saveCards(cards.map((c) => {
+      if (c.id !== id) return c;
+      return { ...c, statement: amount, balance: amount, paid: false, due: computeDueDate(c.dueDay) };
+    }));
+  };
+
   const logPayment = (id, amount) => {
     saveCards(cards.map((c) => {
       if (c.id !== id) return c;
@@ -152,7 +159,9 @@ function App() {
             onDelete={handleDeleteCard} onBack={() => { setAddingCard(false); setEditingCard(null); }} />
         ) : showDetail ? (
           <DetailScreen t={t} card={selCard} onBack={() => setSelected(null)}
-            onLogPayment={(amt) => logPayment(selCard.id, amt)} onEdit={() => setEditingCard(selCard)} />
+            onLogPayment={(amt) => logPayment(selCard.id, amt)}
+            onNewStatement={(amt) => newStatement(selCard.id, amt)}
+            onEdit={() => setEditingCard(selCard)} />
         ) : tab === 'home' ? (
           <HomeScreen t={t} cards={cards} userName={userName} onSelect={(c) => setSelected(c.id)}
             onOpenPlan={() => setTab('plan')} onAddCard={() => setAddingCard(true)} />
