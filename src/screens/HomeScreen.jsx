@@ -120,6 +120,8 @@ export function HomeScreen({ t, cards, userName, onSelect, onOpenPlan, onAddCard
   const planSim   = totalDebt > 0 ? simulatePayoff(cards, 450) : null;
 
   const atFreeLimit = !isPro && freeLimit != null && cards.length >= freeLimit;
+  const visibleCards = (!isPro && freeLimit != null) ? cards.slice(0, freeLimit) : cards;
+  const lockedCount  = cards.length - visibleCards.length;
   const firstName = userName ? userName.trim().split(' ')[0] : '';
   const greeting  = !cards.length
     ? (firstName ? `Welcome, ${firstName}` : 'Welcome')
@@ -213,8 +215,24 @@ export function HomeScreen({ t, cards, userName, onSelect, onOpenPlan, onAddCard
             <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textFaint }}>Tap a card to log payments or update your statement</div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {cards.map((c) => <CardRow key={c.id} card={c} t={t} onClick={() => onSelect(c)} />)}
+            {visibleCards.map((c) => <CardRow key={c.id} card={c} t={t} onClick={() => onSelect(c)} />)}
           </div>
+          {lockedCount > 0 && (
+            <button onClick={onAddCard} style={{
+              width: '100%', marginTop: 8, border: `1.5px dashed ${t.line}`, borderRadius: t.radius,
+              background: 'transparent', cursor: 'pointer', padding: '14px 16px',
+              display: 'flex', alignItems: 'center', gap: 12, WebkitTapHighlightColor: 'transparent',
+            }}>
+              <div style={{ width: 40, height: 40, borderRadius: 12, background: `${t.accent}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Ic.lock width="18" height="18" style={{ color: t.accent }} />
+              </div>
+              <div style={{ flex: 1, textAlign: 'left' }}>
+                <div style={{ fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 14, color: t.text }}>{lockedCount} card{lockedCount > 1 ? 's' : ''} locked</div>
+                <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textSoft, marginTop: 1 }}>Upgrade to Pro to unlock all cards</div>
+              </div>
+              <Ic.chevron width="15" height="15" style={{ color: t.textFaint }} />
+            </button>
+          )}
         </>
       )}
     </div>
