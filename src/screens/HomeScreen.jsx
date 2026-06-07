@@ -109,9 +109,9 @@ export function HomeScreen({ t, cards, userName, onSelect, onOpenPlan, onAddCard
   const unpaid = cards.filter((c) => !c.paid);
   const paid   = cards.filter((c) =>  c.paid);
   const next   = [...unpaid].sort((a, b) => a.due - b.due)[0];
-  const totalDue  = unpaid.reduce((s, c) => s + c.balance, 0);
-  const paidCount = paid.length;
-  const totalDebt = cards.reduce((s, c) => s + c.balance, 0);
+  const totalDue   = unpaid.reduce((s, c) => s + c.balance, 0);
+  const totalPaid  = cards.reduce((s, c) => s + Math.max(0, c.statement - c.balance), 0);
+  const totalDebt  = cards.reduce((s, c) => s + c.balance, 0);
   const planSim   = totalDebt > 0 ? simulatePayoff(cards, 450) : null;
 
   const firstName = userName ? userName.trim().split(' ')[0] : '';
@@ -158,9 +158,8 @@ export function HomeScreen({ t, cards, userName, onSelect, onOpenPlan, onAddCard
         </div>
         <div style={{ flex: 1, background: t.surface, borderRadius: t.radius, padding: '13px 15px', boxShadow: t.shadow }}>
           <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textSoft }}>Paid this month</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
-            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 21, color: t.good }}>{paidCount}</span>
-            <Ic.check width="16" height="16" style={{ color: t.good }} />
+          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 21, color: totalPaid > 0 ? t.good : t.text, marginTop: 3 }}>
+            {money(totalPaid, false)}
           </div>
         </div>
       </div>}
