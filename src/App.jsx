@@ -93,6 +93,15 @@ function App() {
 
   const togglePaid = (id) => saveCards(cards.map((c) => c.id === id ? { ...c, paid: !c.paid } : c));
 
+  const logPayment = (id, amount) => {
+    saveCards(cards.map((c) => {
+      if (c.id !== id) return c;
+      if (amount === 0) return { ...c, paid: false, balance: c.statement }; // undo
+      const remaining = Math.max(0, c.balance - amount);
+      return { ...c, balance: remaining, paid: remaining === 0 };
+    }));
+  };
+
   const handleSaveCard = (card) => {
     if (editingCard) {
       saveCards(cards.map((c) => c.id === card.id ? card : c));
@@ -133,7 +142,7 @@ function App() {
             onBack={() => { setAddingCard(false); setEditingCard(null); }}
           />
         ) : showDetail ? (
-          <DetailScreen t={t} card={selCard} onBack={() => setSelected(null)} onMarkPaid={() => togglePaid(selCard.id)} onEdit={() => setEditingCard(selCard)} />
+          <DetailScreen t={t} card={selCard} onBack={() => setSelected(null)} onLogPayment={(amt) => logPayment(selCard.id, amt)} onEdit={() => setEditingCard(selCard)} />
         ) : tab === 'home' ? (
           <HomeScreen t={t} cards={cards} onSelect={(c) => setSelected(c.id)} onOpenPlan={() => setTab('plan')} onAddCard={() => setAddingCard(true)} />
         ) : tab === 'plan' ? (
