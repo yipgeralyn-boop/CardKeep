@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Ic } from '../icons';
 import { Btn } from '../components/Btn';
 
-export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle, darkMode, onDarkToggle, isPro, onUpgrade }) {
+export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle, darkMode, onDarkToggle, isPro, onUpgrade, userEmail, onSignOut }) {
   const [editing,   setEditing]   = useState(false);
   const [draft,     setDraft]     = useState('');
   const [resetting, setResetting] = useState(false);
@@ -47,7 +47,8 @@ export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle,
             <div style={{ fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 17, color: t.text, marginBottom: 1 }}>
               {userName || 'Your name'}
             </div>
-            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 13.5, color: t.textSoft }}>{statusLine}</div>
+            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textSoft, marginBottom: 1 }}>{userEmail}</div>
+            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textFaint }}>{statusLine}</div>
           </div>
           {!editing && (
             <button onClick={startEdit} style={{ border: 'none', background: t.surface2, borderRadius: 10, padding: '7px 13px', cursor: 'pointer', color: t.accent, fontFamily: 'var(--font-ui)', fontWeight: 600, fontSize: 13.5, WebkitTapHighlightColor: 'transparent' }}>
@@ -156,6 +157,10 @@ export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle,
       <div style={{ textAlign: 'center', fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textFaint, padding: '6px 0 8px' }}>
         Tap ✨ below to restyle this app
       </div>
+
+      <button onClick={onSignOut} style={{ width: '100%', border: `1.5px solid ${t.danger}22`, borderRadius: t.radius, padding: '13px 0', cursor: 'pointer', background: 'transparent', color: t.danger, fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 15, marginBottom: 8, WebkitTapHighlightColor: 'transparent' }}>
+        Sign out
+      </button>
     </div>
   );
 }

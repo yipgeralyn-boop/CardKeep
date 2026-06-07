@@ -1,4 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth } from './firebase';
+import { syncWidget } from './plugins/widgetBridge';
 import { makeTheme, CARDS, serializeCard, deserializeCard, computeDueDate } from './data';
 import { Ic } from './icons';
 import { IOSDevice } from './IOSDevice';
@@ -14,6 +17,7 @@ import { DetailScreen }    from './screens/DetailScreen';
 import { RemindersScreen } from './screens/RemindersScreen';
 import { PayoffScreen }    from './screens/PayoffScreen';
 import { SettingsScreen }  from './screens/SettingsScreen';
+import { AuthScreen }      from './screens/AuthScreen';
 
 const FONT_PAIRS = {
   grotesque: { display: "'Bricolage Grotesque', sans-serif", ui: "'Figtree', sans-serif" },
@@ -65,6 +69,9 @@ function TabBar({ tab, setTab, t }) {
 
 // ── Main app ──────────────────────────────────────────────────────
 function App() {
+  const [authUser,  setAuthUser]  = useState(undefined); // undefined = loading, null = signed out
+  useEffect(() => onAuthStateChanged(auth, (u) => setAuthUser(u ?? null)), []);
+
   const [tw, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const t    = makeTheme({ dark: tw.dark, accent: tw.accent, radius: tw.radius });
   const pair = FONT_PAIRS[tw.font] || FONT_PAIRS.grotesque;
@@ -95,6 +102,7 @@ function App() {
   const saveCards = (next) => {
     setCards(next);
     localStorage.setItem('cardkeep_cards', JSON.stringify(next.map(serializeCard)));
+    syncWidget(next);
   };
 
   const saveName = (name) => {
@@ -173,6 +181,20 @@ function App() {
   const showDetail  = selCard && !editingCard && (tab === 'home' || tab === 'reminders');
   const showAddEdit = addingCard || editingCard;
 
+  // Loading auth state
+  if (authUser === undefined) return (
+    <div style={{ width: '100%', height: '100%', background: '#1C1640', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: 36, height: 36, borderRadius: 999, border: '3px solid rgba(123,111,255,0.3)', borderTopColor: '#7B6FFF', animation: 'spin .8s linear infinite' }} />
+    </div>
+  );
+
+  // Not signed in
+  if (!authUser) return (
+    <div style={{ '--font-display': pair.display, '--font-ui': pair.ui, width: '100%', height: '100%', position: 'relative' }}>
+      <AuthScreen />
+    </div>
+  );
+
   return (
     <div style={{
       '--font-display': pair.display, '--font-ui': pair.ui,
@@ -201,7 +223,8 @@ function App() {
           <SettingsScreen t={t} userName={userName} onNameChange={saveName}
             cards={cards} onResetCycle={resetCycle}
             darkMode={tw.dark} onDarkToggle={(v) => setTweak('dark', v)}
-            isPro={isPro} onUpgrade={() => setShowUpgrade(true)} />
+            isPro={isPro} onUpgrade={() => setShowUpgrade(true)}
+            userEmail={authUser?.email} onSignOut={() => signOut(auth)} />
         )}
       </div>
 
