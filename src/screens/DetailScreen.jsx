@@ -161,7 +161,7 @@ export function DetailScreen({ t, card, onBack, onLogPayment, onNewStatement, on
           <Ic.back width="20" height="20" /> Cards
         </button>
         <button onClick={onEdit} style={{ border: 'none', background: t.surface, width: 38, height: 38, borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: t.shadow, color: t.textSoft, WebkitTapHighlightColor: 'transparent' }}>
-          <Ic.gear width="19" height="19" />
+          <Ic.edit width="17" height="17" />
         </button>
       </div>
 

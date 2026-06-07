@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Ic } from '../icons';
 import { Btn } from '../components/Btn';
 
-export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle }) {
+export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle, darkMode, onDarkToggle }) {
   const [editing,   setEditing]   = useState(false);
   const [draft,     setDraft]     = useState('');
   const [resetting, setResetting] = useState(false);
@@ -74,6 +74,25 @@ export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle 
             </div>
           </div>
         )}
+      </div>
+
+      {/* Appearance */}
+      <h2 style={{ margin: '0 4px 12px', fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 18, color: t.text }}>Appearance</h2>
+      <div style={{ background: t.surface, borderRadius: t.radius, boxShadow: t.shadow, overflow: 'hidden', marginBottom: 22 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 18px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Ic.moon width="20" height="20" style={{ color: t.textSoft }} />
+            <span style={{ fontFamily: 'var(--font-ui)', fontSize: 15, fontWeight: 600, color: t.text }}>Night mode</span>
+          </div>
+          <button onClick={() => onDarkToggle(!darkMode)} style={{
+            width: 50, height: 30, borderRadius: 999, border: 'none', cursor: 'pointer', padding: 3,
+            background: darkMode ? t.accent : (t.dark ? 'rgba(255,255,255,0.16)' : 'rgba(38,34,25,0.16)'),
+            display: 'flex', justifyContent: darkMode ? 'flex-end' : 'flex-start',
+            transition: 'all .2s', WebkitTapHighlightColor: 'transparent',
+          }}>
+            <span style={{ width: 24, height: 24, borderRadius: 999, background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,0.25)', transition: 'all .2s' }} />
+          </button>
+        </div>
       </div>
 
       {/* Statement cycle */}

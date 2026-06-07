@@ -177,7 +177,8 @@ function App() {
             reminders={reminders} setReminders={setReminders} tone={tw.tone} userName={userName} />
         ) : (
           <SettingsScreen t={t} userName={userName} onNameChange={saveName}
-            cards={cards} onResetCycle={resetCycle} />
+            cards={cards} onResetCycle={resetCycle}
+            darkMode={tw.dark} onDarkToggle={(v) => setTweak('dark', v)} />
         )}
       </div>
 

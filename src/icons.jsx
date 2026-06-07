@@ -15,4 +15,6 @@ export const Ic = {
   chart: (p) => <svg viewBox="0 0 24 24" fill="none" {...p}><path d="M4 7l5 5 3-3 8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M20 11V17H14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
   target: (p) => <svg viewBox="0 0 24 24" fill="none" {...p}><circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.8"/><circle cx="12" cy="12" r="3.4" stroke="currentColor" strokeWidth="1.8"/></svg>,
   flag: (p) => <svg viewBox="0 0 24 24" fill="none" {...p}><path d="M6 21V4M6 4h11l-2 3.5L17 11H6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  edit: (p) => <svg viewBox="0 0 24 24" fill="none" {...p}><path d="M15.5 4.5l4 4L8 20H4v-4L15.5 4.5z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  moon: (p) => <svg viewBox="0 0 24 24" fill="none" {...p}><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
 };
