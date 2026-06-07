@@ -246,6 +246,7 @@ export function DetailScreen({ t, card, onBack, onLogPayment, onNewStatement, on
           ['Card number', `•••• •••• •••• ${card.last4}`],
           ['Issuer', card.issuer],
           ['Statement closes', fmtDate(new Date(card.due.getFullYear(), card.due.getMonth(), card.due.getDate() - 21))],
+          ...(card.lateFee > 0 ? [['Late payment fee', money(card.lateFee)]] : []),
         ].map((row, i, arr) => (
           <div key={row[0]} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 16px', borderBottom: i < arr.length - 1 ? `1px solid ${t.line}` : 'none' }}>
             <span style={{ fontFamily: 'var(--font-ui)', fontSize: 14.5, color: t.textSoft }}>{row[0]}</span>

@@ -33,6 +33,11 @@ input::placeholder { color: rgba(150,145,135,0.6); }
   0%   { transform: scaleY(0.2) translateY(10px); }
   100% { transform: scaleY(1) translateY(0); }
 }
+@keyframes confettiFall {
+  0%   { transform: translateY(-16px) rotate(0deg); opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateY(920px) rotate(var(--spin, 540deg)); opacity: 0; }
+}
 @keyframes sparklePop {
   0%   { transform: scale(0);   opacity: 0; }
   45%  { transform: scale(1.2); opacity: 1; }

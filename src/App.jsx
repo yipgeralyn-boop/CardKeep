@@ -6,6 +6,7 @@ import {
   useTweaks, TweaksPanel, TweakSection, TweakColor,
   TweakToggle, TweakSlider, TweakRadio,
 } from './TweaksPanel';
+import { Confetti }        from './components/Confetti';
 import { HomeScreen }      from './screens/HomeScreen';
 import { AddCardScreen }   from './screens/AddCardScreen';
 import { DetailScreen }    from './screens/DetailScreen';
@@ -82,8 +83,9 @@ function App() {
   const [selected,    setSelected]    = useState(null);
   const [monthly,     setMonthly]     = useState(450);
   const [reminders,   setReminders]   = useState({ '7d': true, '3d': true, due: true });
-  const [addingCard,  setAddingCard]  = useState(false);
-  const [editingCard, setEditingCard] = useState(null);
+  const [addingCard,    setAddingCard]    = useState(false);
+  const [editingCard,   setEditingCard]   = useState(null);
+  const [showConfetti,  setShowConfetti]  = useState(false);
 
   const saveCards = (next) => {
     setCards(next);
@@ -105,12 +107,15 @@ function App() {
   };
 
   const logPayment = (id, amount) => {
+    let justCleared = false;
     saveCards(cards.map((c) => {
       if (c.id !== id) return c;
       if (amount === 0) return { ...c, paid: false, balance: c.statement };
       const remaining = Math.max(0, c.balance - amount);
+      if (remaining === 0) justCleared = true;
       return { ...c, balance: remaining, paid: remaining === 0 };
     }));
+    if (justCleared) setShowConfetti(true);
   };
 
   // Reset all cards to unpaid with refreshed due dates — call at new statement cycle
@@ -177,6 +182,23 @@ function App() {
       </div>
 
       {!showDetail && !showAddEdit && <TabBar tab={tab} setTab={(x) => { setSelected(null); setTab(x); }} t={t} />}
+
+      <Confetti active={showConfetti} onDone={() => setShowConfetti(false)} />
+      {showConfetti && (
+        <div style={{
+          position: 'absolute', top: 70, left: 0, right: 0, zIndex: 201,
+          display: 'flex', justifyContent: 'center', pointerEvents: 'none',
+          animation: 'pop .35s cubic-bezier(.2,.8,.2,1) both',
+        }}>
+          <div style={{
+            background: t.surface, borderRadius: 999, padding: '10px 20px',
+            boxShadow: t.shadow, display: 'flex', alignItems: 'center', gap: 8,
+            fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 15, color: t.text,
+          }}>
+            🎉 Card cleared — great work!
+          </div>
+        </div>
+      )}
 
       <TweaksPanel>
         <TweakSection label="Appearance" />

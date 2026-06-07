@@ -74,7 +74,7 @@ function GradPicker({ value, onChange, t }) {
 const EMPTY = {
   name: '', issuer: '', last4: '', network: 'VISA',
   grad: GRAD_PRESETS[0],
-  balance: '', statement: '', min: '', apr: '',
+  balance: '', statement: '', min: '', lateFee: '', apr: '',
   dueDay: '',
 };
 
@@ -89,6 +89,7 @@ export function AddCardScreen({ t, card, onSave, onDelete, onBack }) {
     balance:  String(card.balance),
     statement:String(card.statement),
     min:      String(card.min),
+    lateFee:  String(card.lateFee || ''),
     apr:      String((card.apr * 100).toFixed(2)),
     dueDay:   String(card.dueDay),
   } : EMPTY);
@@ -101,7 +102,7 @@ export function AddCardScreen({ t, card, onSave, onDelete, onBack }) {
     id: 'preview', name: f.name || 'Card name', issuer: f.issuer || 'Issuer',
     network: f.network, last4: f.last4 || '0000', grad: f.grad,
     balance: parseFloat(f.balance) || 0, statement: parseFloat(f.statement) || 0,
-    min: parseFloat(f.min) || 0, limit: 0,
+    min: parseFloat(f.min) || 0, lateFee: parseFloat(f.lateFee) || 0, limit: 0,
     apr: parseFloat(f.apr) / 100 || 0, due: new Date(), paid: false,
   };
 
@@ -128,6 +129,7 @@ export function AddCardScreen({ t, card, onSave, onDelete, onBack }) {
       balance:  parseFloat(f.balance) || 0,
       statement:parseFloat(f.statement || f.balance) || 0,
       min:      parseFloat(f.min) || 0,
+      lateFee:  parseFloat(f.lateFee) || 0,
       limit:    card?.limit ?? 0,
       apr:      parseFloat(f.apr) / 100,
       dueDay,
@@ -194,9 +196,18 @@ export function AddCardScreen({ t, card, onSave, onDelete, onBack }) {
           <Input value={f.statement} onChange={set('statement')} t={t} placeholder="Same as current balance" inputMode="decimal" prefix="$" />
         </Field>
 
-        <Field label="Minimum payment" t={t}>
-          <Input value={f.min} onChange={set('min')} t={t} placeholder="25.00" inputMode="decimal" prefix="$" />
-        </Field>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ flex: 1 }}>
+            <Field label="Minimum payment" t={t}>
+              <Input value={f.min} onChange={set('min')} t={t} placeholder="25.00" inputMode="decimal" prefix="$" />
+            </Field>
+          </div>
+          <div style={{ flex: 1 }}>
+            <Field label="Late payment fee" t={t}>
+              <Input value={f.lateFee} onChange={set('lateFee')} t={t} placeholder="30.00" inputMode="decimal" prefix="$" />
+            </Field>
+          </div>
+        </div>
 
         <div style={{ display: 'flex', gap: 10 }}>
           <div style={{ flex: 1 }}>
