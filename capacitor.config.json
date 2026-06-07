@@ -1,0 +1,11 @@
+{
+  "appId": "com.yipgeralyn.cardkeep",
+  "appName": "CardKeep",
+  "webDir": "dist",
+  "ios": {
+    "contentInset": "always"
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}
