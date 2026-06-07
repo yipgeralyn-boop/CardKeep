@@ -127,6 +127,15 @@ export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle,
         </div>
       </div>
 
+      {/* Privacy note */}
+      <div style={{ background: t.surface, borderRadius: t.radius, boxShadow: t.shadow, padding: '14px 18px', marginBottom: 16, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+        <Ic.shield width="18" height="18" style={{ color: t.good, flexShrink: 0, marginTop: 1 }} />
+        <div>
+          <div style={{ fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 14, color: t.text, marginBottom: 3 }}>Your data stays on your device</div>
+          <div style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: t.textSoft, lineHeight: 1.5 }}>CardKeep never connects to your bank or sends your information anywhere. Everything is stored locally on this device only.</div>
+        </div>
+      </div>
+
       <div style={{ textAlign: 'center', fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textFaint, padding: '6px 0 8px' }}>
         Tap ✨ below to restyle this app
       </div>

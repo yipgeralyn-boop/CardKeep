@@ -102,6 +102,10 @@ function EmptyState({ t, onAdd }) {
       <Btn t={t} onClick={onAdd} full>
         <Ic.plus width="18" height="18" /> Add your first card
       </Btn>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 18 }}>
+        <Ic.shield width="13" height="13" style={{ color: t.textFaint, flexShrink: 0 }} />
+        <span style={{ fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textFaint }}>Your data stays on your device — never shared</span>
+      </div>
     </div>
   );
 }
