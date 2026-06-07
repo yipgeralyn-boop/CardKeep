@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7B6FFF"/>
+      <stop offset="100%" style="stop-color:#4338CA"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#9B8FFF"/>
+      <stop offset="100%" style="stop-color:#6355E8"/>
+    </linearGradient>
+    <linearGradient id="holo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   style="stop-color:#ffffff;stop-opacity:0.00"/>
+      <stop offset="30%"  style="stop-color:#ffffff;stop-opacity:0.00"/>
+      <stop offset="44%"  style="stop-color:#ffffff;stop-opacity:0.11"/>
+      <stop offset="50%"  style="stop-color:#C8B8FF;stop-opacity:0.18"/>
+      <stop offset="56%"  style="stop-color:#ffffff;stop-opacity:0.11"/>
+      <stop offset="70%"  style="stop-color:#ffffff;stop-opacity:0.00"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.00"/>
+    </linearGradient>
+    <linearGradient id="chipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E8C96A"/>
+      <stop offset="100%" style="stop-color:#B8942A"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.12"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+    </radialGradient>
+    <filter id="cardShadow">
+      <feDropShadow dx="0" dy="24" stdDeviation="36" flood-color="#000000" flood-opacity="0.55"/>
+    </filter>
+    <filter id="mascotShadow">
+      <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#000000" flood-opacity="0.40"/>
+    </filter>
+    <clipPath id="cardClip">
+      <rect x="72" y="480" width="880" height="500" rx="52"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <rect width="1024" height="1024" fill="url(#glow)"/>
+
+  <!-- ① Mascot body — drawn BEHIND the card -->
+  <g transform="translate(162, -50) scale(3.5)" filter="url(#mascotShadow)">
+    <!-- Leaves -->
+    <rect x="96.5" y="40" width="7" height="22" rx="3.5" fill="#2E9E6B"/>
+    <path d="M100 50 C98 34, 86 26, 72 26 C76 40, 86 50, 100 52 Z" fill="#2E9E6B"/>
+    <path d="M100 50 C102 36, 114 28, 128 29 C123 42, 113 50, 100 52 Z" fill="#2E9E6B" opacity="0.88"/>
+    <!-- Body -->
+    <ellipse cx="100" cy="120" rx="68" ry="64" fill="#5B4FD6"/>
+    <!-- Belly -->
+    <ellipse cx="100" cy="130" rx="45" ry="46" fill="#FFFFFF"/>
+    <!-- Feet -->
+    <ellipse cx="80"  cy="180" rx="14" ry="9" fill="#5B4FD6"/>
+    <ellipse cx="120" cy="180" rx="14" ry="9" fill="#5B4FD6"/>
+    <!-- Cheeks -->
+    <ellipse cx="70"  cy="124" rx="8" ry="5.5" fill="rgba(236,106,94,0.35)"/>
+    <ellipse cx="130" cy="124" rx="8" ry="5.5" fill="rgba(236,106,94,0.35)"/>
+    <!-- Calm eyes -->
+    <circle cx="83"  cy="110" r="7" fill="#1A1420"/>
+    <circle cx="117" cy="110" r="7" fill="#1A1420"/>
+    <circle cx="85"  cy="108" r="2.4" fill="white"/>
+    <circle cx="119" cy="108" r="2.4" fill="white"/>
+    <!-- Composed mouth -->
+    <path d="M90 128 q10 7 20 0" stroke="#1A1420" stroke-width="5" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- ② Card — drawn over the lower body -->
+  <g filter="url(#cardShadow)">
+    <rect x="72" y="480" width="880" height="500" rx="52" fill="url(#cardGrad)" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
+    <!-- Holographic stripe -->
+    <rect x="72" y="480" width="880" height="500" rx="52" fill="url(#holo)"/>
+    <!-- Top edge highlight -->
+    <rect x="72" y="480" width="880" height="2" rx="1" fill="rgba(255,255,255,0.12)"/>
+
+    <!-- Chip -->
+    <rect x="148" y="556" width="108" height="82" rx="15" fill="url(#chipGrad)"/>
+    <line x1="202" y1="556" x2="202" y2="638" stroke="rgba(0,0,0,0.18)" stroke-width="1.5"/>
+    <line x1="148" y1="597" x2="256" y2="597" stroke="rgba(0,0,0,0.18)" stroke-width="1.5"/>
+
+    <!-- Card number dots — 3 groups of 4 -->
+    <circle cx="298" cy="668" r="8" fill="rgba(255,255,255,0.35)"/>
+    <circle cx="325" cy="668" r="8" fill="rgba(255,255,255,0.35)"/>
+    <circle cx="352" cy="668" r="8" fill="rgba(255,255,255,0.35)"/>
+    <circle cx="379" cy="668" r="8" fill="rgba(255,255,255,0.35)"/>
+
+    <circle cx="430" cy="668" r="8" fill="rgba(255,255,255,0.35)"/>
+    <circle cx="457" cy="668" r="8" fill="rgba(255,255,255,0.35)"/>
+    <circle cx="484" cy="668" r="8" fill="rgba(255,255,255,0.35)"/>
+    <circle cx="511" cy="668" r="8" fill="rgba(255,255,255,0.35)"/>
+
+    <circle cx="562" cy="668" r="8" fill="rgba(255,255,255,0.35)"/>
+    <circle cx="589" cy="668" r="8" fill="rgba(255,255,255,0.35)"/>
+    <circle cx="616" cy="668" r="8" fill="rgba(255,255,255,0.35)"/>
+    <circle cx="643" cy="668" r="8" fill="rgba(255,255,255,0.35)"/>
+
+    <!-- Contactless waves -->
+    <path d="M820 560 q28 28 0 56"  stroke="rgba(255,255,255,0.28)" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+    <path d="M840 547 q44 44 0 84"  stroke="rgba(255,255,255,0.18)" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+    <path d="M860 534 q60 60 0 112" stroke="rgba(255,255,255,0.10)" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+
+    <!-- CardKeep name on card -->
+    <text x="148" y="886" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="700" letter-spacing="3" fill="rgba(255,255,255,0.70)">CARDKEEP</text>
+  </g>
+
+  <!-- ③ Gripping hands — drawn IN FRONT of the card top edge -->
+  <!-- Left hand gripping card top-left -->
+  <ellipse cx="210" cy="492" rx="38" ry="28" fill="#5B4FD6" transform="rotate(-15 210 492)"/>
+  <!-- Right hand gripping card top-right -->
+  <ellipse cx="814" cy="492" rx="38" ry="28" fill="#5B4FD6" transform="rotate(15 814 492)"/>
+
+</svg>
