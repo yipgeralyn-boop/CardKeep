@@ -17,4 +17,5 @@ export const Ic = {
   flag: (p) => <svg viewBox="0 0 24 24" fill="none" {...p}><path d="M6 21V4M6 4h11l-2 3.5L17 11H6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
   edit: (p) => <svg viewBox="0 0 24 24" fill="none" {...p}><path d="M15.5 4.5l4 4L8 20H4v-4L15.5 4.5z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
   moon: (p) => <svg viewBox="0 0 24 24" fill="none" {...p}><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  lock: (p) => <svg viewBox="0 0 24 24" fill="none" {...p}><rect x="5" y="11" width="14" height="10" rx="2.5" stroke="currentColor" strokeWidth="1.8"/><path d="M8 11V7a4 4 0 118 0v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/><circle cx="12" cy="16" r="1.5" fill="currentColor"/></svg>,
 };

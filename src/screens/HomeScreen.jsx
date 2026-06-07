@@ -110,7 +110,7 @@ function EmptyState({ t, onAdd }) {
   );
 }
 
-export function HomeScreen({ t, cards, userName, onSelect, onOpenPlan, onAddCard }) {
+export function HomeScreen({ t, cards, userName, onSelect, onOpenPlan, onAddCard, isPro, freeLimit }) {
   const unpaid = cards.filter((c) => !c.paid);
   const paid   = cards.filter((c) =>  c.paid);
   const next   = [...unpaid].sort((a, b) => a.due - b.due)[0];
@@ -119,6 +119,7 @@ export function HomeScreen({ t, cards, userName, onSelect, onOpenPlan, onAddCard
   const totalDebt  = cards.reduce((s, c) => s + c.balance, 0);
   const planSim   = totalDebt > 0 ? simulatePayoff(cards, 450) : null;
 
+  const atFreeLimit = !isPro && freeLimit != null && cards.length >= freeLimit;
   const firstName = userName ? userName.trim().split(' ')[0] : '';
   const greeting  = !cards.length
     ? (firstName ? `Welcome, ${firstName}` : 'Welcome')
@@ -140,12 +141,16 @@ export function HomeScreen({ t, cards, userName, onSelect, onOpenPlan, onAddCard
           </div>
         </div>
         <button onClick={onAddCard} style={{
-          width: 42, height: 42, borderRadius: 999, background: t.accent, color: t.onAccent,
+          width: 42, height: 42, borderRadius: 999,
+          background: atFreeLimit ? t.surface2 : t.accent,
+          color: atFreeLimit ? t.textSoft : t.onAccent,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          border: 'none', cursor: 'pointer', boxShadow: `0 4px 12px ${t.accent}55`, flexShrink: 0,
-          WebkitTapHighlightColor: 'transparent',
+          border: atFreeLimit ? `1.5px solid ${t.line}` : 'none',
+          cursor: 'pointer',
+          boxShadow: atFreeLimit ? 'none' : `0 4px 12px ${t.accent}55`,
+          flexShrink: 0, WebkitTapHighlightColor: 'transparent',
         }}>
-          <Ic.plus width="20" height="20" />
+          {atFreeLimit ? <Ic.lock width="18" height="18" /> : <Ic.plus width="20" height="20" />}
         </button>
       </div>
 
@@ -200,8 +205,9 @@ export function HomeScreen({ t, cards, userName, onSelect, onOpenPlan, onAddCard
           <div style={{ padding: '0 4px 10px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 3 }}>
               <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 19, color: t.text }}>Your cards</h2>
-              <button onClick={onAddCard} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: t.accent, fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 13.5, padding: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Ic.plus width="14" height="14" /> Add
+              <button onClick={onAddCard} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: atFreeLimit ? t.textSoft : t.accent, fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 13.5, padding: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
+                {atFreeLimit ? <Ic.lock width="13" height="13" /> : <Ic.plus width="14" height="14" />}
+                {atFreeLimit ? 'Pro' : 'Add'}
               </button>
             </div>
             <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textFaint }}>Tap a card to log payments or update your statement</div>

@@ -7,6 +7,7 @@ import {
   TweakToggle, TweakSlider, TweakRadio,
 } from './TweaksPanel';
 import { Confetti }        from './components/Confetti';
+import { UpgradeSheet }    from './components/UpgradeSheet';
 import { HomeScreen }      from './screens/HomeScreen';
 import { AddCardScreen }   from './screens/AddCardScreen';
 import { DetailScreen }    from './screens/DetailScreen';
@@ -86,6 +87,10 @@ function App() {
   const [addingCard,    setAddingCard]    = useState(false);
   const [editingCard,   setEditingCard]   = useState(null);
   const [showConfetti,  setShowConfetti]  = useState(false);
+  const [isPro,         setIsPro]         = useState(() => localStorage.getItem('cardkeep_pro') === '1');
+  const [showUpgrade,   setShowUpgrade]   = useState(false);
+
+  const FREE_CARD_LIMIT = 1;
 
   const saveCards = (next) => {
     setCards(next);
@@ -126,6 +131,22 @@ function App() {
       balance: c.statement,
       due:     computeDueDate(c.dueDay),
     })));
+  };
+
+  const handleAddCard = () => {
+    if (!isPro && cards.length >= FREE_CARD_LIMIT) {
+      setShowUpgrade(true);
+    } else {
+      setAddingCard(true);
+    }
+  };
+
+  const handlePurchase = (plan) => {
+    // TODO: wire RevenueCat purchase for `plan` ('monthly' | 'yearly')
+    setIsPro(true);
+    localStorage.setItem('cardkeep_pro', '1');
+    setShowUpgrade(false);
+    setAddingCard(true);
   };
 
   const handleSaveCard = (card) => {
@@ -169,7 +190,8 @@ function App() {
             onEdit={() => setEditingCard(selCard)} />
         ) : tab === 'home' ? (
           <HomeScreen t={t} cards={cards} userName={userName} onSelect={(c) => setSelected(c.id)}
-            onOpenPlan={() => setTab('plan')} onAddCard={() => setAddingCard(true)} />
+            onOpenPlan={() => setTab('plan')} onAddCard={handleAddCard}
+            isPro={isPro} freeLimit={FREE_CARD_LIMIT} onUpgrade={() => setShowUpgrade(true)} />
         ) : tab === 'plan' ? (
           <PayoffScreen t={t} cards={cards} monthly={monthly} setMonthly={setMonthly} />
         ) : tab === 'reminders' ? (
@@ -178,11 +200,16 @@ function App() {
         ) : (
           <SettingsScreen t={t} userName={userName} onNameChange={saveName}
             cards={cards} onResetCycle={resetCycle}
-            darkMode={tw.dark} onDarkToggle={(v) => setTweak('dark', v)} />
+            darkMode={tw.dark} onDarkToggle={(v) => setTweak('dark', v)}
+            isPro={isPro} onUpgrade={() => setShowUpgrade(true)} />
         )}
       </div>
 
       {!showDetail && !showAddEdit && <TabBar tab={tab} setTab={(x) => { setSelected(null); setTab(x); }} t={t} />}
+
+      {showUpgrade && (
+        <UpgradeSheet t={t} onClose={() => setShowUpgrade(false)} onPurchase={handlePurchase} />
+      )}
 
       <Confetti active={showConfetti} onDone={() => setShowConfetti(false)} />
       {showConfetti && (

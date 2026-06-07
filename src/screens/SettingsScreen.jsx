@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Ic } from '../icons';
 import { Btn } from '../components/Btn';
 
-export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle, darkMode, onDarkToggle }) {
+export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle, darkMode, onDarkToggle, isPro, onUpgrade }) {
   const [editing,   setEditing]   = useState(false);
   const [draft,     setDraft]     = useState('');
   const [resetting, setResetting] = useState(false);
@@ -134,6 +134,23 @@ export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle,
           <div style={{ fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 14, color: t.text, marginBottom: 3 }}>Your data stays on your device</div>
           <div style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: t.textSoft, lineHeight: 1.5 }}>CardKeep never connects to your bank or sends your information anywhere. Everything is stored locally on this device only.</div>
         </div>
+      </div>
+
+      {/* Pro status */}
+      <div style={{ background: isPro ? `${t.accent}18` : t.surface, borderRadius: t.radius, boxShadow: t.shadow, padding: '14px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div>
+          <div style={{ fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 14, color: t.text, marginBottom: 2 }}>
+            {isPro ? 'CardKeep Pro ✨' : 'Free plan'}
+          </div>
+          <div style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: t.textSoft }}>
+            {isPro ? 'Unlimited cards & all features' : '1 card included · upgrade for more'}
+          </div>
+        </div>
+        {!isPro && (
+          <button onClick={onUpgrade} style={{ border: 'none', borderRadius: 12, padding: '8px 14px', cursor: 'pointer', background: t.accent, color: t.onAccent, fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 13, WebkitTapHighlightColor: 'transparent', flexShrink: 0 }}>
+            Upgrade
+          </button>
+        )}
       </div>
 
       <div style={{ textAlign: 'center', fontFamily: 'var(--font-ui)', fontSize: 12.5, color: t.textFaint, padding: '6px 0 8px' }}>
