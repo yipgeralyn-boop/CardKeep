@@ -14,8 +14,8 @@ export function UpgradeSheet({ t, onClose, onPurchase }) {
   const [plan, setPlan] = useState('yearly');
 
   const prices = {
-    monthly: { label: 'Monthly', price: '$2.99', sub: 'per month' },
-    yearly:  { label: 'Yearly',  price: '$19.99', sub: 'per year · save 44%' },
+    monthly: { label: 'Monthly', price: '$6.99', sub: 'per month' },
+    yearly:  { label: 'Yearly',  price: '$49.99', sub: 'per year · save 40%' },
   };
 
   return (
@@ -97,7 +97,7 @@ export function UpgradeSheet({ t, onClose, onPurchase }) {
       </button>
 
       <div style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginBottom: 6 }}>
-        Then {plan === 'yearly' ? '$19.99/yr' : '$2.99/mo'} · Cancel anytime
+        Then {plan === 'yearly' ? '$49.99/yr' : '$6.99/mo'} · Cancel anytime
       </div>
 
       <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: 'var(--font-ui)', fontSize: 13, color: 'rgba(255,255,255,0.4)', padding: '8px 0', WebkitTapHighlightColor: 'transparent' }}>
