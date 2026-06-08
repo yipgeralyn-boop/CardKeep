@@ -2,10 +2,6 @@
   "appId": "com.yipgeralyn.cardkeep",
   "appName": "CardKeep",
   "webDir": "dist",
-  "server": {
-    "url": "https://card-keep.vercel.app",
-    "cleartext": false
-  },
   "ios": {
     "contentInset": "always"
   },
