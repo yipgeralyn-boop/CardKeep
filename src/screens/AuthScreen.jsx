@@ -70,7 +70,7 @@ export function AuthScreen() {
       <Mascot mood="happy" size={84} t={t} style={{ marginBottom: 12 }} />
 
       <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 28, color: '#fff', marginBottom: 4 }}>
-        CardKeep
+        DueCard
       </div>
       <div style={{ fontFamily: 'var(--font-ui)', fontSize: 14, color: 'rgba(255,255,255,0.55)', marginBottom: 36, textAlign: 'center' }}>
         {mode === 'signin' ? 'Welcome back — sign in to continue' :

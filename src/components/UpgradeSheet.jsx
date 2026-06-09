@@ -42,10 +42,10 @@ export function UpgradeSheet({ t, onClose, onPurchase }) {
 
       {/* Heading */}
       <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 26, color: '#fff', textAlign: 'center', marginBottom: 6, letterSpacing: -0.3 }}>
-        CardKeep Pro ✨
+        DueCard Pro ✨
       </div>
       <div style={{ fontFamily: 'var(--font-ui)', fontSize: 14, color: 'rgba(255,255,255,0.6)', textAlign: 'center', lineHeight: 1.5, marginBottom: 22 }}>
-        Unlock unlimited cards and everything{'\n'}CardKeep has to offer.
+        Unlock unlimited cards and everything{'\n'}DueCard has to offer.
       </div>
 
       {/* Feature list */}
@@ -105,7 +105,7 @@ export function UpgradeSheet({ t, onClose, onPurchase }) {
       </button>
 
       <div style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'rgba(255,255,255,0.22)', textAlign: 'center', marginTop: 8, lineHeight: 1.6, padding: '0 8px' }}>
-        To cancel your free trial, go to Settings → Apple ID → Subscriptions → CardKeep → Cancel Free Trial before the 7 days are up. No charge if cancelled in time.
+        To cancel your free trial, go to Settings → Apple ID → Subscriptions → DueCard → Cancel Free Trial before the 7 days are up. No charge if cancelled in time.
       </div>
     </div>
   );

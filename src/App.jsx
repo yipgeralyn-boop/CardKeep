@@ -82,13 +82,13 @@ function MainApp({ uid, userEmail }) {
 
   const [cards, setCards] = useState(() => {
     try {
-      const raw = localStorage.getItem(key('cardkeep_cards'));
+      const raw = localStorage.getItem(key('duecard_cards'));
       return raw ? JSON.parse(raw).map(deserializeCard) : [];
     } catch { return []; }
   });
 
   const [userName, setUserName] = useState(() =>
-    localStorage.getItem(key('cardkeep_name')) || ''
+    localStorage.getItem(key('duecard_name')) || ''
   );
 
   const [isPro,        setIsPro]        = useState(false);
@@ -103,13 +103,13 @@ function MainApp({ uid, userEmail }) {
 
   const saveCards = (next) => {
     setCards(next);
-    localStorage.setItem(key('cardkeep_cards'), JSON.stringify(next.map(serializeCard)));
+    localStorage.setItem(key('duecard_cards'), JSON.stringify(next.map(serializeCard)));
     syncWidget(next);
   };
 
   const saveName = (name) => {
     setUserName(name);
-    localStorage.setItem(key('cardkeep_name'), name);
+    localStorage.setItem(key('duecard_name'), name);
   };
 
   const selCard = cards.find((c) => c.id === selected);

@@ -136,7 +136,7 @@ export function HomeScreen({ t, cards, userName, onSelect, onOpenPlan, onAddCard
         <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
           <Mascot mood="happy" size={50} t={t} style={{ marginTop: -2, flexShrink: 0 }} />
           <div>
-            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 14, color: t.textSoft }}>CardKeep</div>
+            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 14, color: t.textSoft }}>DueCard</div>
             <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: t.text, letterSpacing: 0.1, marginTop: 1 }}>
               {greeting}
             </div>

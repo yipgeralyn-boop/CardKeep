@@ -99,8 +99,8 @@
     <path d="M840 547 q44 44 0 84"  stroke="rgba(255,255,255,0.18)" stroke-width="6.5" fill="none" stroke-linecap="round"/>
     <path d="M860 534 q60 60 0 112" stroke="rgba(255,255,255,0.10)" stroke-width="6.5" fill="none" stroke-linecap="round"/>
 
-    <!-- CardKeep name on card -->
-    <text x="148" y="886" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="700" letter-spacing="3" fill="rgba(255,255,255,0.70)">CARDKEEP</text>
+    <!-- DueCard name on card -->
+    <text x="148" y="886" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="700" letter-spacing="3" fill="rgba(255,255,255,0.70)">DUECARD</text>
   </g>
 
   <!-- ③ Gripping hands — drawn IN FRONT of the card top edge -->

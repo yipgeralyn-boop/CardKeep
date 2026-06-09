@@ -1,6 +1,6 @@
 {
-  "appId": "com.yipgeralyn.cardkeep",
-  "appName": "CardKeep",
+  "appId": "com.yipgeralyn.duecard",
+  "appName": "DueCard",
   "webDir": "dist",
   "ios": {
     "contentInset": "always"

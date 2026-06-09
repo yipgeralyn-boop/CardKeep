@@ -79,7 +79,7 @@ export function RemindersScreen({ t, cards, onSelect, reminders, setReminders, t
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
             <span style={{ fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 14, color: t.text, whiteSpace: 'nowrap' }}>
-              {upcoming[0] ? `${upcoming[0].name} payment` : 'CardKeep'}
+              {upcoming[0] ? `${upcoming[0].name} payment` : 'DueCard'}
             </span>
             <span style={{ fontFamily: 'var(--font-ui)', fontSize: 12, color: t.textFaint, flexShrink: 0 }}>now</span>
           </div>

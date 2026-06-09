@@ -133,7 +133,7 @@ export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle,
         <Ic.shield width="18" height="18" style={{ color: t.good, flexShrink: 0, marginTop: 1 }} />
         <div>
           <div style={{ fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 14, color: t.text, marginBottom: 3 }}>Your data stays on your device</div>
-          <div style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: t.textSoft, lineHeight: 1.5 }}>CardKeep never connects to your bank or sends your information anywhere. Everything is stored locally on this device only.</div>
+          <div style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: t.textSoft, lineHeight: 1.5 }}>DueCard never connects to your bank or sends your information anywhere. Everything is stored locally on this device only.</div>
         </div>
       </div>
 
@@ -141,7 +141,7 @@ export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle,
       <div style={{ background: isPro ? `${t.accent}18` : t.surface, borderRadius: t.radius, boxShadow: t.shadow, padding: '14px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <div style={{ fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 14, color: t.text, marginBottom: 2 }}>
-            {isPro ? 'CardKeep Pro ✨' : 'Free plan'}
+            {isPro ? 'DueCard Pro ✨' : 'Free plan'}
           </div>
           <div style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: t.textSoft }}>
             {isPro ? 'Unlimited cards & all features' : '1 card included · upgrade for more'}
