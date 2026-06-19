@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, onSnapshot }            from 'firebase/firestore';
 import { auth, db } from './firebase';
+import { initPurchases, checkProStatus, purchasePlan, restorePurchases } from './purchases';
 import { syncWidget } from './plugins/widgetBridge';
 import { makeTheme, serializeCard, deserializeCard, computeDueDate } from './data';
 import { Ic } from './icons';
@@ -142,10 +143,13 @@ function MainApp({ uid, userEmail }) {
     }
   };
 
-  const handlePurchase = () => {
-    // Purchase is processed natively via RevenueCat in the iOS app.
-    // A Cloud Function will set isPro=true in Firestore upon successful payment.
-    // The onSnapshot listener above will pick it up automatically.
+  const handlePurchase = async (plan) => {
+    try {
+      const success = await purchasePlan(plan);
+      if (success) setIsPro(true);
+    } catch (e) {
+      console.error('Purchase failed', e);
+    }
     setShowUpgrade(false);
   };
 
@@ -172,7 +176,12 @@ function MainApp({ uid, userEmail }) {
     const ref = doc(db, 'users', uid);
     return onSnapshot(ref, (snap) => {
       setIsPro(snap.exists() && snap.data()?.isPro === true);
-    }, () => setIsPro(false)); // default to free on any error
+    }, () => setIsPro(false));
+  }, [uid]);
+
+  // Init RevenueCat and sync Pro status
+  useEffect(() => {
+    initPurchases(uid).then(() => checkProStatus().then((pro) => { if (pro) setIsPro(true); }));
   }, [uid]);
 
   const scrollRef = useRef(null);
@@ -210,6 +219,7 @@ function MainApp({ uid, userEmail }) {
             cards={cards} onResetCycle={resetCycle}
             darkMode={tw.dark} onDarkToggle={(v) => setTweak('dark', v)}
             isPro={isPro} onUpgrade={() => setShowUpgrade(true)}
+            onRestore={async () => { const pro = await restorePurchases(); if (pro) setIsPro(true); }}
             userEmail={userEmail} onSignOut={() => signOut(auth)} />
         )}
       </div>

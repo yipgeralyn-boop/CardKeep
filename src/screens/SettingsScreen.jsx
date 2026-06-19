@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Ic } from '../icons';
 import { Btn } from '../components/Btn';
 
-export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle, darkMode, onDarkToggle, isPro, onUpgrade, userEmail, onSignOut }) {
+export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle, darkMode, onDarkToggle, isPro, onUpgrade, onRestore, userEmail, onSignOut }) {
   const [editing,   setEditing]   = useState(false);
   const [draft,     setDraft]     = useState('');
   const [resetting, setResetting] = useState(false);
@@ -165,6 +165,11 @@ export function SettingsScreen({ t, userName, onNameChange, cards, onResetCycle,
         Tap ✨ below to restyle this app
       </div>
 
+      {!isPro && onRestore && (
+        <button onClick={onRestore} style={{ width: '100%', border: `1.5px solid ${t.line}`, borderRadius: t.radius, padding: '13px 0', cursor: 'pointer', background: 'transparent', color: t.textSoft, fontFamily: 'var(--font-ui)', fontWeight: 600, fontSize: 14, marginBottom: 8, WebkitTapHighlightColor: 'transparent' }}>
+          Restore purchases
+        </button>
+      )}
       <button onClick={onSignOut} style={{ width: '100%', border: `1.5px solid ${t.danger}22`, borderRadius: t.radius, padding: '13px 0', cursor: 'pointer', background: 'transparent', color: t.danger, fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: 15, marginBottom: 8, WebkitTapHighlightColor: 'transparent' }}>
         Sign out
       </button>
